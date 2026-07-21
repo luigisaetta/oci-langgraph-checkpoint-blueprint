@@ -5,15 +5,17 @@ License: MIT
 Description: Runs a one-node LangGraph flow with Oracle ADB checkpoint persistence.
 """
 
-from collections.abc import Callable
-from typing import Any, TypedDict
+from typing import TypedDict
 
 import oracledb
 from langgraph.graph import END, START, StateGraph
 from langgraph_oracledb.checkpoint.oracle import OracleSaver
 
-from utils.test_db_connection import ADBConnectionConfig, ConnectionConfigurationError
-from utils.test_db_connection import load_connection_config
+from utils.adb_connection import (
+    ConnectionConfigurationError,
+    create_adb_connection,
+    load_connection_config,
+)
 
 EXAMPLE_THREAD_ID = "example01-thread"
 EXAMPLE_MESSAGE = "hello ADB"
@@ -54,22 +56,6 @@ def build_graph() -> StateGraph:
     workflow.add_edge(START, "uppercase_message")
     workflow.add_edge("uppercase_message", END)
     return workflow
-
-
-def create_adb_connection(
-    config: ADBConnectionConfig,
-    connector: Callable[..., Any] = oracledb.connect,
-) -> Any:
-    """Create a wallet-based Oracle ADB connection for the checkpointer.
-
-    Args:
-        config: Validated local ADB connection configuration.
-        connector: Callable compatible with ``oracledb.connect``.
-
-    Returns:
-        An open Oracle database connection.
-    """
-    return connector(**config.as_connect_kwargs())
 
 
 def run_example(message: str = EXAMPLE_MESSAGE) -> ExampleState:

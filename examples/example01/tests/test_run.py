@@ -5,8 +5,8 @@ License: MIT
 Description: Unit tests for the basic Oracle ADB checkpoint example.
 """
 
-from examples.example01.run import ADBConnectionConfig
-from examples.example01.run import build_graph, create_adb_connection
+from examples.example01.run import build_graph
+from utils.adb_connection import ADBConnectionConfig, create_adb_connection
 
 
 def test_graph_uppercases_the_input_message() -> None:
