@@ -22,7 +22,7 @@ This specification defines the initial Conda environment, its dependency groups,
    * `oracledb` for Oracle ADB connectivity.
    * `python-dotenv` for explicitly loading local environment configuration.
 4. The development dependencies must include `pytest`, `pytest-cov`, `black`, and `pylint`, in line with the repository quality policy.
-5. No model-provider SDK, web framework, or LangChain integration may be included in this initial environment. Those dependencies must be justified by a later feature specification.
+5. No model-provider SDK, web framework, or LangChain integration may be included in the initial environment unless a later accepted feature specification justifies it. Specification `006-example02-hitl-sse-agent.md` justifies FastAPI, Uvicorn, and HTTPX.
 6. `.env` and local ADB wallet material must remain untracked by Git. `.env.sample` must remain the safe, committed configuration template.
 
 ## Acceptance Criteria

@@ -23,7 +23,7 @@ If the environment already exists, update it from the declared dependencies:
 conda env update --name oci-langgraph-checkpoint-blueprint --file environment.yml
 ```
 
-The environment includes LangGraph, `langgraph-oracledb`, the Oracle Python driver, and the project test and quality tools.
+The environment includes LangGraph, `langgraph-oracledb`, the Oracle Python driver, FastAPI, Uvicorn, HTTPX, and the project test and quality tools.
 
 ## Configure the local ADB connection
 

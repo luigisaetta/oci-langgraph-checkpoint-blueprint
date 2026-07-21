@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * This changelog and the documentation-structure specification that governs its ongoing maintenance.
 * README badges for Black, Pylint, pytest, Python 3.11+, and the spec-driven development workflow.
 * Example 01: a one-node LangGraph flow that persists checkpoints through Oracle ADB with `OracleSaver`.
+* Example 02: a three-node Human-in-the-Loop LangGraph agent with Oracle ADB checkpoints, FastAPI SSE streaming, and an interactive Python client.
 
 ### Changed
 

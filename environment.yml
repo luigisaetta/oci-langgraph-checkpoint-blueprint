@@ -11,6 +11,9 @@ dependencies:
       - langgraph-oracledb
       - oracledb
       - python-dotenv
+      - fastapi
+      - uvicorn
+      - httpx
       - pytest
       - pytest-cov
       - black

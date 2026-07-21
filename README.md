@@ -63,6 +63,7 @@ For the complete local setup, including Conda environment creation and the ADB c
 The examples progress from the smallest checkpointed workflow to more advanced enterprise patterns.
 
 * [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md)
+* [Example 02: Human-in-the-Loop Agent with FastAPI SSE](examples/example02_hitl_sse/README.md)
 
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 
