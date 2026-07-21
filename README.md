@@ -53,8 +53,17 @@ The repository is being developed using a spec-driven workflow. Each significant
 Use the Conda environment named `oci-langgraph-checkpoint-blueprint` for local development and validation:
 
 ```bash
+conda env create --file environment.yml
 conda activate oci-langgraph-checkpoint-blueprint
 ```
+
+For an existing environment, install or update the declared packages with:
+
+```bash
+conda env update --name oci-langgraph-checkpoint-blueprint --file environment.yml
+```
+
+The initial environment includes LangGraph, the `langgraph-oracledb` checkpoint saver, the Oracle Python driver, local environment loading, and the project’s test, coverage, formatting, and linting tools. Model-provider and web-framework dependencies will be introduced only when their feature specifications require them.
 
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 

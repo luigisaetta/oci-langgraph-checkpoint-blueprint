@@ -1,0 +1,5 @@
+# Local environment configuration containing credentials.
+.env
+
+# Local Oracle Autonomous Database wallet material.
+wallet_dir/

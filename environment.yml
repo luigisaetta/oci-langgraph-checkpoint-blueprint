@@ -1,0 +1,17 @@
+name: oci-langgraph-checkpoint-blueprint
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - langgraph
+      - langgraph-oracledb
+      - oracledb
+      - python-dotenv
+      - pytest
+      - pytest-cov
+      - black
+      - pylint
