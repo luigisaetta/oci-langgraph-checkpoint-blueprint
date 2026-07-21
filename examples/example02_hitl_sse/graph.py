@@ -23,9 +23,9 @@ def build_agent_graph(checkpointer: Any) -> Any:
         A compiled three-node LangGraph agent.
     """
     graph = StateGraph(AgentState)
-    graph.add_node("intake", IntakeNode().call)
-    graph.add_node("draft", DraftNode().call)
-    graph.add_node("approval", ApprovalNode().call)
+    graph.add_node("intake", IntakeNode())
+    graph.add_node("draft", DraftNode())
+    graph.add_node("approval", ApprovalNode())
     graph.add_edge(START, "intake")
     graph.add_edge("intake", "draft")
     graph.add_edge("draft", "approval")

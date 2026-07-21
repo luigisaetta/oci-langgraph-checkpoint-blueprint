@@ -11,7 +11,7 @@ from examples.example02_hitl_sse.state import AgentState
 class IntakeNode:  # pylint: disable=too-few-public-methods
     """Accepts and normalizes the raw message supplied to the agent."""
 
-    def call(self, state: AgentState) -> dict[str, str]:
+    def __call__(self, state: AgentState) -> dict[str, str]:
         """Normalize the incoming message and mark it ready for drafting.
 
         Args:

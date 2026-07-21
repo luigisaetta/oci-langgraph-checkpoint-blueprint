@@ -11,7 +11,7 @@ from examples.example02_hitl_sse.state import AgentState
 class DraftNode:  # pylint: disable=too-few-public-methods
     """Creates a draft that the final node submits for human approval."""
 
-    def call(self, state: AgentState) -> dict[str, str]:
+    def __call__(self, state: AgentState) -> dict[str, str]:
         """Create a deterministic draft from the normalized user message.
 
         Args:

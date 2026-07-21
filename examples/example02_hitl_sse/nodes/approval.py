@@ -13,7 +13,7 @@ from examples.example02_hitl_sse.state import AgentState
 class ApprovalNode:  # pylint: disable=too-few-public-methods
     """Requests a human decision for the draft and stores the result."""
 
-    def call(self, state: AgentState) -> dict[str, str]:
+    def __call__(self, state: AgentState) -> dict[str, str]:
         """Pause execution until the human approves or rejects the draft.
 
         Args:

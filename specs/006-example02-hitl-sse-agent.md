@@ -23,7 +23,7 @@ The Conda environment must explicitly include:
 ## Graph Contract
 
 1. Define an `AgentState` with the input message, normalized message, draft, status, and approval decision.
-2. Implement exactly three graph nodes as separate classes in separate modules. Every class must expose a `call(state)` method:
+2. Implement exactly three graph nodes as separate classes in separate modules. Every class must implement `__call__(state)` so its instance is directly usable as a LangGraph node callable:
    * `IntakeNode` normalizes and accepts the input.
    * `DraftNode` creates a deterministic draft from the normalized input.
    * `ApprovalNode` calls LangGraph `interrupt()` with an approval request containing the draft.

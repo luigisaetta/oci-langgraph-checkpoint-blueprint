@@ -10,20 +10,20 @@ The workflow is deterministic on purpose: it makes the Human-in-the-Loop (HITL),
 START
   |
   v
-IntakeNode.call(state)
+IntakeNode(state)
   |
   v
-DraftNode.call(state)
+DraftNode(state)
   |
   v
-ApprovalNode.call(state)
+ApprovalNode(state)
   |  interrupt() -> approval_required SSE event
   |  Command(resume="approve" | "reject")
   v
 END
 ```
 
-Each node is a separate class with a `call(state)` method:
+Each node is a separate callable class: it implements `__call__(state)` and is registered directly with LangGraph.
 
 | Node | Responsibility |
 | --- | --- |

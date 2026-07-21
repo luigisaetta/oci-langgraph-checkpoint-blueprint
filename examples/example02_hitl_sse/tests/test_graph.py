@@ -15,8 +15,8 @@ from examples.example02_hitl_sse.nodes import DraftNode, IntakeNode
 
 def test_intake_and_draft_nodes_transform_the_agent_state() -> None:
     """The first two nodes normalize the message and produce a draft."""
-    intake_update = IntakeNode().call({"message": "  prepare report  "})
-    draft_update = DraftNode().call(
+    intake_update = IntakeNode()({"message": "  prepare report  "})
+    draft_update = DraftNode()(
         {"normalized_message": intake_update["normalized_message"]}
     )
 
