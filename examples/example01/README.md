@@ -66,11 +66,13 @@ SELECT
     checkpoint_ns,
     checkpoint_id,
     parent_checkpoint_id,
-    metadata
+    JSON_SERIALIZE(metadata RETURNING VARCHAR2(4000)) AS metadata_json
 FROM checkpoints
 WHERE thread_id LIKE 'example01-%'
 ORDER BY checkpoint_id;
 ```
+
+`metadata` is stored as an Oracle JSON value. Serializing it in the query makes the result easy to display in SQL Developer and Database Actions.
 
 Inspect serialized state channels associated with the example thread:
 

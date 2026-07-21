@@ -26,6 +26,7 @@ Create `examples/example01/` with a synchronous, one-node LangGraph flow. The fl
 4. The example must be runnable from the repository root with `python -m examples.example01.run` after the local environment and `.env` have been configured.
 5. The example must print the input, processed output, and thread ID, but never credentials or wallet passwords.
 6. The example README must document prerequisite setup, the execution command, the role of `setup()`, the tables created by the saver (`checkpoint_migrations`, `checkpoints`, `checkpoint_blobs`, and `checkpoint_writes`), and safe SQL queries for inspecting checkpoints whose thread ID starts with `example01-`.
+   The checkpoint inspection query must serialize the Oracle JSON `metadata` column to text with `JSON_SERIALIZE` for compatibility with SQL clients.
 7. Automated unit tests must validate graph behaviour and ADB connection argument construction without opening a real database connection.
 
 ## Acceptance Criteria
