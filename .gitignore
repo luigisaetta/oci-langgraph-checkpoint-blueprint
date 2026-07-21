@@ -3,3 +3,8 @@
 
 # Local Oracle Autonomous Database wallet material.
 wallet_dir/
+
+# Python bytecode and local operating-system metadata.
+__pycache__/
+*.py[cod]
+.DS_Store

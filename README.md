@@ -65,6 +65,16 @@ conda env update --name oci-langgraph-checkpoint-blueprint --file environment.ym
 
 The initial environment includes LangGraph, the `langgraph-oracledb` checkpoint saver, the Oracle Python driver, local environment loading, and the project’s test, coverage, formatting, and linting tools. Model-provider and web-framework dependencies will be introduced only when their feature specifications require them.
 
+## Validate the ADB connection
+
+Copy `.env.sample` to `.env`, populate the local ADB credentials and extracted wallet directory, then run this command from the repository root:
+
+```bash
+python -m test_db_connection
+```
+
+The utility executes `SELECT 1 FROM dual` after connecting. It prints `ADB connection OK.` on success; it never prints configuration values or credentials.
+
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 
 ## Design principles
