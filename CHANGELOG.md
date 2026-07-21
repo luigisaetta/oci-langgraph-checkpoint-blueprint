@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `QUICKSTART.md` for local environment setup and ADB connection validation.
 * This changelog and the documentation-structure specification that governs its ongoing maintenance.
 * README badges for Black, Pylint, pytest, Python 3.11+, and the spec-driven development workflow.
+* Example 01: a one-node LangGraph flow that persists checkpoints through Oracle ADB with `OracleSaver`.
 
 ### Changed
 

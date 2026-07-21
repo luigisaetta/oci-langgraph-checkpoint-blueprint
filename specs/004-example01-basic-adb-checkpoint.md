@@ -1,0 +1,44 @@
+# Specification: Example 01 — Basic LangGraph Flow with Oracle ADB Checkpoints
+
+## Status
+
+Accepted
+
+## Context
+
+The first example in the progressive examples series must show the smallest useful LangGraph flow that persists its execution state in Oracle Autonomous Database (ADB). It establishes the database setup and inspection foundation for later, more advanced examples.
+
+## Scope
+
+Create `examples/example01/` with a synchronous, one-node LangGraph flow. The flow transforms an input message to uppercase and persists its state with Oracle's `langgraph-oracledb` `OracleSaver`.
+
+## Oracle Integration Contract
+
+* Use `OracleSaver` from `langgraph_oracledb.checkpoint.oracle` as documented by Oracle's [langgraph-oracledb library](https://github.com/oracle/langchain-oracle/tree/main/libs/langgraph-oracledb).
+* Open the ADB connection with `oracledb.connect()` and the existing local configuration values: `DB_USER`, `DB_PWD`, `WALLET_DIR`, `WALLET_PWD`, and `DB_DSN`.
+* Pass the configured database connection to `OracleSaver` and call `setup()` before compiling or invoking the graph. `setup()` is responsible for creating or upgrading the checkpoint persistence schema.
+
+## Behaviour
+
+1. The example source and documentation must live in `examples/example01/`.
+2. The graph must contain one node that writes an uppercase version of the input `message` to `processed_message`.
+3. The compiled graph must use `OracleSaver` as its checkpointer and invoke the graph with a stable `thread_id` named `example01-thread`.
+4. The example must be runnable from the repository root with `python -m examples.example01.run` after the local environment and `.env` have been configured.
+5. The example must print the input, processed output, and thread ID, but never credentials or wallet passwords.
+6. The example README must document prerequisite setup, the execution command, the role of `setup()`, the tables created by the saver (`checkpoint_migrations`, `checkpoints`, `checkpoint_blobs`, and `checkpoint_writes`), and safe SQL queries for inspecting checkpoints for `example01-thread`.
+7. Automated unit tests must validate graph behaviour and ADB connection argument construction without opening a real database connection.
+
+## Acceptance Criteria
+
+* The graph unit test confirms that input `hello ADB` produces `HELLO ADB`.
+* The ADB connection factory test confirms that `WALLET_DIR` is passed as both `config_dir` and `wallet_location`.
+* The example source imports `OracleSaver`, calls `setup()`, and compiles the graph with `checkpointer=checkpointer`.
+* The example documentation identifies the four Oracle checkpoint tables and includes a query filtered to `thread_id = 'example01-thread'`.
+* Unit tests do not depend on an OCI or ADB connection.
+
+## Out of Scope
+
+* Asynchronous graphs and `AsyncOracleSaver`.
+* Human-in-the-loop interruption and resume.
+* Agents, tools, LLM model calls, and Oracle vector search.
+* Destructive cleanup or teardown of checkpoint tables.

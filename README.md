@@ -58,6 +58,12 @@ The repository is being developed using a spec-driven workflow. Each significant
 
 For the complete local setup, including Conda environment creation and the ADB connectivity test, see [QUICKSTART.md](QUICKSTART.md).
 
+## Examples
+
+The examples progress from the smallest checkpointed workflow to more advanced enterprise patterns.
+
+* [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md)
+
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 
 ## Design principles
