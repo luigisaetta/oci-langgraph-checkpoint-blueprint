@@ -96,7 +96,15 @@ def test_check_connection_reports_success_and_closes_connection() -> None:
     assert received_kwargs["wallet_location"] == VALID_ENVIRONMENT["WALLET_DIR"]
     assert connection.cursor_instance.executed_statement == "SELECT 1 FROM dual"
     assert connection.closed is True
-    assert messages == ["ADB connection OK."]
+    assert messages[0] == (
+        "Oracle ADB connection parameters:\n"
+        "  DB_USER: demo_user\n"
+        "  DB_DSN: demo_low\n"
+        "  WALLET_DIR: /safe/local/wallet"
+    )
+    assert messages[1] == "ADB connection OK."
+    assert VALID_ENVIRONMENT["DB_PWD"] not in "\n".join(messages)
+    assert VALID_ENVIRONMENT["WALLET_PWD"] not in "\n".join(messages)
 
 
 def test_check_connection_reports_missing_configuration_without_values() -> None:
@@ -128,6 +136,7 @@ def test_check_connection_reports_connection_failure_without_secret_values() -> 
     )
 
     assert exit_code == 1
-    assert "ADB connection check failed (DatabaseError)" in messages[0]
-    assert VALID_ENVIRONMENT["DB_PWD"] not in messages[0]
-    assert VALID_ENVIRONMENT["WALLET_PWD"] not in messages[0]
+    assert messages[0].startswith("Oracle ADB connection parameters:")
+    assert "ADB connection check failed (DatabaseError)" in messages[1]
+    assert VALID_ENVIRONMENT["DB_PWD"] not in "\n".join(messages)
+    assert VALID_ENVIRONMENT["WALLET_PWD"] not in "\n".join(messages)

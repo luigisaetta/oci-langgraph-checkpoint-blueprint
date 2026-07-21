@@ -62,6 +62,25 @@ class ADBConnectionConfig:
         }
 
 
+def format_connection_header(config: ADBConnectionConfig) -> str:
+    """Create a safe, human-readable summary of the connection attempt.
+
+    Args:
+        config: Validated ADB connection configuration.
+
+    Returns:
+        A header containing only non-sensitive connection parameters.
+    """
+    return "\n".join(
+        (
+            "Oracle ADB connection parameters:",
+            f"  DB_USER: {config.user}",
+            f"  DB_DSN: {config.dsn}",
+            f"  WALLET_DIR: {config.wallet_directory}",
+        )
+    )
+
+
 def load_connection_config(
     environment: Mapping[str, str | None] | None = None,
     dotenv_path: Path = DEFAULT_ENV_FILE,
@@ -126,6 +145,7 @@ def check_connection(
         emit(f"ADB connection configuration error: {error}")
         return 2
 
+    emit(format_connection_header(config))
     connection = None
     try:
         connection = connector(**config.as_connect_kwargs())

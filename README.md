@@ -73,7 +73,7 @@ Copy `.env.sample` to `.env`, populate the local ADB credentials and extracted w
 python -m test_db_connection
 ```
 
-The utility executes `SELECT 1 FROM dual` after connecting. It prints `ADB connection OK.` on success; it never prints configuration values or credentials.
+The utility prints the non-sensitive `DB_USER`, `DB_DSN`, and `WALLET_DIR` values before it connects, then executes `SELECT 1 FROM dual`. It prints `ADB connection OK.` on success and never prints `DB_PWD` or `WALLET_PWD`.
 
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 
