@@ -26,6 +26,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * Example 01 now generates and displays a unique `example01-` thread ID for every execution.
 * Example 01 serializes checkpoint JSON metadata in its documented inspection query for SQL-client compatibility.
 * Example 01 now explains the three durable checkpoint snapshots created by one one-node graph execution.
+* Example 02 client now separates streamed SSE events with blank lines for readability.
+* Example 02 client now starts with a titled safe-configuration header.
+* Example 02 now documents how to verify the persisted HITL pause and final decision checkpoint in ADB.
 
 ## Changelog policy
 

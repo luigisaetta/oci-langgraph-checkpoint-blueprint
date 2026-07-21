@@ -13,7 +13,32 @@ from typing import Any
 
 import httpx
 
+from utils.adb_connection import ADBConnectionConfig, format_connection_header
+from utils.adb_connection import load_connection_config
+
 DEFAULT_API_URL = "http://127.0.0.1:8000"
+
+
+def format_client_header(api_url: str, config: ADBConnectionConfig) -> str:
+    """Create a safe, readable header for the interactive client session.
+
+    Args:
+        api_url: Base URL of the FastAPI service.
+        config: Validated local ADB configuration.
+
+    Returns:
+        Header containing the client title and non-sensitive configuration values.
+    """
+    return "\n".join(
+        (
+            "=" * 64,
+            "Example 02 | Human-in-the-Loop Agent with FastAPI SSE",
+            "=" * 64,
+            f"API URL: {api_url}",
+            format_connection_header(config),
+            "=" * 64,
+        )
+    )
 
 
 async def iter_sse_events(
@@ -67,6 +92,7 @@ async def consume_stream(
         response.raise_for_status()
         async for event_name, event_payload in iter_sse_events(response):
             print(f"[{event_name}] {json.dumps(event_payload, indent=2)}")
+            print()
             thread_id = event_payload.get("thread_id", thread_id)
             if event_name == "approval_required":
                 approval_required = True
@@ -95,6 +121,9 @@ async def run_client(api_url: str, message: str) -> None:
         api_url: Base URL of the Example 02 FastAPI service.
         message: Initial agent message.
     """
+    config = load_connection_config()
+    print(format_client_header(api_url, config))
+    print()
     async with httpx.AsyncClient(timeout=None) as client:
         thread_id, approval_required = await consume_stream(
             client,

@@ -47,13 +47,14 @@ The Conda environment must explicitly include:
 ## Client Contract
 
 1. Provide a Python client runnable from the repository root.
-2. The client must display each streamed node update.
+2. The client must display each streamed node update, followed by a blank line for readability.
+   Before connecting, it must display a titled header containing the API URL and the non-sensitive `DB_USER`, `DB_DSN`, and `WALLET_DIR` local configuration values.
 3. On `approval_required`, it must prompt the user for `approve` or `reject`.
 4. It must call the decision endpoint with the original thread ID and display the resumed stream until completion.
 
 ## Documentation and Testing
 
-1. The example README must document setup, server and client commands, API endpoints, the HITL lifecycle, thread persistence, and ADB inspection queries.
+1. The example README must document setup, server and client commands, API endpoints, the HITL lifecycle, thread persistence, and ADB inspection queries. It must include a step-by-step procedure for verifying the persisted approval pause and the final checkpoint after a decision.
 2. Unit tests must validate node transformations, interrupt/resume behaviour with an in-memory saver, SSE formatting, and API request validation without requiring OCI or ADB.
 3. The main README must link to Example 02, and `CHANGELOG.md` must record the feature.
 

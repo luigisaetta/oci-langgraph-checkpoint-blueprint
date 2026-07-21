@@ -117,6 +117,105 @@ ORDER BY thread_id, checkpoint_id;
 
 After the client sends a decision, query the same thread ID again. The final checkpoint state includes `approval_decision` and a `status` of `approved` or `rejected`.
 
+## Verify the approval pause and final checkpoint step by step
+
+Use this procedure to observe the durable HITL lifecycle in ADB. Replace `<thread-id>` with the ID emitted by the client's `run_started` event.
+
+### 1. Start a run and wait at the approval prompt
+
+Start the API, then run the Python client as described above. Let the client reach this prompt, but do **not** enter a decision yet:
+
+```text
+Decision [approve/reject]:
+```
+
+At this point, the API has streamed `approval_required` and the graph is paused in `ApprovalNode`. Copy the `example02-...` thread ID from the earlier `run_started` event.
+
+### 2. Verify the persisted approval state
+
+In SQL Developer or Database Actions, run this read-only query:
+
+```sql
+SELECT
+    checkpoint_id,
+    JSON_VALUE(
+        checkpoint,
+        '$.channel_values.status' RETURNING VARCHAR2(50)
+    ) AS status,
+    JSON_VALUE(
+        checkpoint,
+        '$.channel_values.draft' RETURNING VARCHAR2(4000)
+    ) AS draft,
+    JSON_VALUE(
+        checkpoint,
+        '$.channel_values.approval_decision' RETURNING VARCHAR2(20)
+    ) AS approval_decision
+FROM checkpoints
+WHERE thread_id = '<thread-id>'
+ORDER BY checkpoint_id DESC
+FETCH FIRST 1 ROW ONLY;
+```
+
+Observe these values in the latest checkpoint:
+
+| Column | Expected value while paused |
+| --- | --- |
+| `status` | `awaiting_approval` |
+| `draft` | The deterministic draft displayed by the client. |
+| `approval_decision` | `NULL`, because no human decision has been supplied yet. |
+
+LangGraph also persists the interrupt as a pending write. Confirm it with:
+
+```sql
+SELECT
+    checkpoint_id,
+    task_id,
+    channel,
+    type
+FROM checkpoint_writes
+WHERE thread_id = '<thread-id>'
+  AND channel = '__interrupt__'
+ORDER BY checkpoint_id, task_id;
+```
+
+At least one row confirms that the `interrupt()` call was durably saved for the thread.
+
+### 3. Submit the human decision
+
+Return to the client terminal and enter either `approve` or `reject`. The client calls `POST /runs/{thread_id}/decision`, and the API resumes the same thread with `Command(resume=...)`.
+
+Wait for the `run_completed` SSE event.
+
+### 4. Verify the final checkpoint
+
+Run this query against the same thread:
+
+```sql
+SELECT
+    checkpoint_id,
+    JSON_VALUE(
+        checkpoint,
+        '$.channel_values.status' RETURNING VARCHAR2(50)
+    ) AS status,
+    JSON_VALUE(
+        checkpoint,
+        '$.channel_values.approval_decision' RETURNING VARCHAR2(20)
+    ) AS approval_decision
+FROM checkpoints
+WHERE thread_id = '<thread-id>'
+ORDER BY checkpoint_id DESC
+FETCH FIRST 1 ROW ONLY;
+```
+
+The latest checkpoint is the completed state. It must show one of these consistent pairs:
+
+| Submitted decision | `status` | `approval_decision` |
+| --- | --- | --- |
+| `approve` | `approved` | `approve` |
+| `reject` | `rejected` | `reject` |
+
+The original pause checkpoint remains in the history, while this newer checkpoint proves that the persisted workflow resumed and reached `END`.
+
 ## LangGraph and Oracle references
 
 This example uses Oracle's [langgraph-oracledb integration](https://github.com/oracle/langchain-oracle/tree/main/libs/langgraph-oracledb) for `OracleSaver`. Its HITL flow follows the LangGraph pattern of pausing with [`interrupt()` and resuming with `Command(resume=...)`](https://docs.langchain.com/oss/python/langgraph/graph-api), while node updates are surfaced through [LangGraph streaming](https://docs.langchain.com/oss/python/langgraph/streaming).
