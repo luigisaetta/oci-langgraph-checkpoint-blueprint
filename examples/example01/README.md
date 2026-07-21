@@ -54,6 +54,24 @@ Example01 flow completed.
 
 Each run uses a distinct `example01-<generated-uuid>` thread ID. Copy the ID printed by the command to focus on one execution, or use the prefix filter below to inspect all Example 01 runs.
 
+## Why one run creates three checkpoints
+
+The flow has only one application node:
+
+```text
+START -> uppercase_message -> END
+```
+
+However, LangGraph persists state at execution boundaries, not only after application nodes. A successful Example 01 run therefore creates three checkpoint records for its thread:
+
+| Checkpoint metadata | Persisted state | Meaning |
+| --- | --- | --- |
+| `source=input`, `step=-1` | `__start__` contains the supplied `message`. | LangGraph has received the graph input. |
+| `source=loop`, `step=0` | The `message` is present and `uppercase_message` is scheduled. | The graph is ready to execute its only node. |
+| `source=loop`, `step=1` | Both `message` and `processed_message` are present. | The node has completed and the graph can reach `END`. |
+
+These records are durable execution snapshots, not repeated executions of `uppercase_message`. If a longer workflow stopped at one of these boundaries, the checkpointer would provide the state needed to resume it.
+
 ## Inspect the checkpoints in ADB
 
 Open SQL Developer or Database Actions with the same database user, then run the following read-only queries.

@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * Shared ADB configuration and wallet-based connection handling now live in `utils.adb_connection`, separating reusable application concerns from the connectivity-check command.
 * Example 01 now generates and displays a unique `example01-` thread ID for every execution.
 * Example 01 serializes checkpoint JSON metadata in its documented inspection query for SQL-client compatibility.
+* Example 01 now explains the three durable checkpoint snapshots created by one one-node graph execution.
 
 ## Changelog policy
 

@@ -27,6 +27,7 @@ Create `examples/example01/` with a synchronous, one-node LangGraph flow. The fl
 5. The example must print the input, processed output, and thread ID, but never credentials or wallet passwords.
 6. The example README must document prerequisite setup, the execution command, the role of `setup()`, the tables created by the saver (`checkpoint_migrations`, `checkpoints`, `checkpoint_blobs`, and `checkpoint_writes`), and safe SQL queries for inspecting checkpoints whose thread ID starts with `example01-`.
    The checkpoint inspection query must serialize the Oracle JSON `metadata` column to text with `JSON_SERIALIZE` for compatibility with SQL clients.
+   It must also explain why one execution of the one-node graph produces three checkpoint records.
 7. Automated unit tests must validate graph behaviour and ADB connection argument construction without opening a real database connection.
 
 ## Acceptance Criteria
@@ -36,6 +37,7 @@ Create `examples/example01/` with a synchronous, one-node LangGraph flow. The fl
 * The ADB connection factory test confirms that `WALLET_DIR` is passed as both `config_dir` and `wallet_location`.
 * The example source imports `OracleSaver`, calls `setup()`, and compiles the graph with `checkpointer=checkpointer`.
 * The example documentation identifies the four Oracle checkpoint tables and includes a query filtered to `thread_id LIKE 'example01-%'`.
+* The example documentation maps the three checkpoint records to the input snapshot and the two graph-loop steps.
 * Unit tests do not depend on an OCI or ADB connection.
 
 ## Out of Scope

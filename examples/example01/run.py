@@ -36,7 +36,7 @@ class ExampleState(TypedDict):
 
 def uppercase_message(state: ExampleState) -> dict[str, str]:
     """
-    Thi is the (only) node of the Graph.
+    This is the (only) node of the Graph.
     Convert the input message to uppercase.
 
     Args:
