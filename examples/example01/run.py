@@ -35,7 +35,9 @@ class ExampleState(TypedDict):
 
 
 def uppercase_message(state: ExampleState) -> dict[str, str]:
-    """Convert the input message to uppercase.
+    """
+    Thi is the (only) node of the Graph.
+    Convert the input message to uppercase.
 
     Args:
         state: Current graph state containing the input message.
@@ -69,7 +71,8 @@ def generate_thread_id() -> str:
 
 
 def run_example(message: str = EXAMPLE_MESSAGE) -> tuple[ExampleState, str]:
-    """Set up ADB checkpoint storage and run the example graph once.
+    """
+    Set up ADB checkpoint storage and run the example graph once.
 
     Args:
         message: Input message processed by the graph.
