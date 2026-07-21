@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * The ADB connection utility now displays a safe connection summary before reporting the result; database and wallet passwords are never shown.
 * The README now links to the dedicated quick start guide instead of duplicating setup and connectivity-test instructions.
 * Shared ADB configuration and wallet-based connection handling now live in `utils.adb_connection`, separating reusable application concerns from the connectivity-check command.
+* Example 01 now generates and displays a unique `example01-` thread ID for every execution.
 
 ## Changelog policy
 

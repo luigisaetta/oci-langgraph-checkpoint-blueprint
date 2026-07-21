@@ -11,7 +11,7 @@ It intentionally contains no LLM, tools, or agent loop. The aim is to make the p
 3. Creates an `OracleSaver` from that connection and calls `setup()`.
 4. Builds a one-node LangGraph flow: `START -> uppercase_message -> END`.
 5. Compiles the graph with `checkpointer=checkpointer`.
-6. Invokes the graph with the stable thread ID `example01-thread`.
+6. Invokes the graph with a new thread ID prefixed with `example01-`.
 7. Prints the input and uppercase output.
 
 ## Prerequisites
@@ -36,7 +36,7 @@ Expected output has this shape:
 
 ```text
 Example01 flow completed.
-  Thread ID: example01-thread
+  Thread ID: example01-<generated-uuid>
   Input: hello ADB
   Processed output: HELLO ADB
 ```
@@ -52,7 +52,7 @@ Example01 flow completed.
 | `checkpoint_blobs` | Serialized channel values, including state values stored outside the main checkpoint JSON. |
 | `checkpoint_writes` | Writes produced by graph tasks while a checkpoint is being persisted. |
 
-Repeated runs use the same `example01-thread` ID, so they create a visible checkpoint history for that thread.
+Each run uses a distinct `example01-<generated-uuid>` thread ID. Copy the ID printed by the command to focus on one execution, or use the prefix filter below to inspect all Example 01 runs.
 
 ## Inspect the checkpoints in ADB
 
@@ -68,7 +68,7 @@ SELECT
     parent_checkpoint_id,
     metadata
 FROM checkpoints
-WHERE thread_id = 'example01-thread'
+WHERE thread_id LIKE 'example01-%'
 ORDER BY checkpoint_id;
 ```
 
@@ -82,7 +82,7 @@ SELECT
     version,
     type
 FROM checkpoint_blobs
-WHERE thread_id = 'example01-thread'
+WHERE thread_id LIKE 'example01-%'
 ORDER BY channel, version;
 ```
 
@@ -97,7 +97,7 @@ SELECT
     channel,
     type
 FROM checkpoint_writes
-WHERE thread_id = 'example01-thread'
+WHERE thread_id LIKE 'example01-%'
 ORDER BY checkpoint_id, task_id;
 ```
 

@@ -6,6 +6,7 @@ Description: Runs a one-node LangGraph flow with Oracle ADB checkpoint persisten
 """
 
 from typing import TypedDict
+from uuid import uuid4
 
 import oracledb
 from langgraph.graph import END, START, StateGraph
@@ -17,7 +18,7 @@ from utils.adb_connection import (
     load_connection_config,
 )
 
-EXAMPLE_THREAD_ID = "example01-thread"
+EXAMPLE_THREAD_ID_PREFIX = "example01-"
 EXAMPLE_MESSAGE = "hello ADB"
 
 
@@ -58,29 +59,39 @@ def build_graph() -> StateGraph:
     return workflow
 
 
-def run_example(message: str = EXAMPLE_MESSAGE) -> ExampleState:
+def generate_thread_id() -> str:
+    """Generate a unique thread ID for one Example 01 execution.
+
+    Returns:
+        A thread ID prefixed with ``example01-``.
+    """
+    return f"{EXAMPLE_THREAD_ID_PREFIX}{uuid4().hex}"
+
+
+def run_example(message: str = EXAMPLE_MESSAGE) -> tuple[ExampleState, str]:
     """Set up ADB checkpoint storage and run the example graph once.
 
     Args:
         message: Input message processed by the graph.
 
     Returns:
-        Final graph state containing the input and processed message.
+        A tuple containing the final graph state and the generated thread ID.
 
     Raises:
         ConnectionConfigurationError: If the local `.env` configuration is incomplete.
         oracledb.Error: If ADB connection or checkpoint operations fail.
     """
     config = load_connection_config()
+    thread_id = generate_thread_id()
     with create_adb_connection(config) as connection:
         checkpointer = OracleSaver(connection)
         checkpointer.setup()
         graph = build_graph().compile(checkpointer=checkpointer)
         result = graph.invoke(
             {"message": message},
-            config={"configurable": {"thread_id": EXAMPLE_THREAD_ID}},
+            config={"configurable": {"thread_id": thread_id}},
         )
-    return result
+    return result, thread_id
 
 
 def main() -> int:
@@ -91,7 +102,7 @@ def main() -> int:
         missing local configuration.
     """
     try:
-        result = run_example()
+        result, thread_id = run_example()
     except ConnectionConfigurationError as error:
         print(f"Example01 configuration error: {error}")
         return 2
@@ -103,7 +114,7 @@ def main() -> int:
         return 1
 
     print("Example01 flow completed.")
-    print(f"  Thread ID: {EXAMPLE_THREAD_ID}")
+    print(f"  Thread ID: {thread_id}")
     print(f"  Input: {result['message']}")
     print(f"  Processed output: {result['processed_message']}")
     return 0
