@@ -48,32 +48,9 @@ This blueprint is for developers, architects, and platform teams who want to und
 
 The repository is being developed using a spec-driven workflow. Each significant capability will be specified under `specs/` before implementation, with clear acceptance criteria and accompanying tests.
 
-## Development environment
+## Quick start
 
-Use the Conda environment named `oci-langgraph-checkpoint-blueprint` for local development and validation:
-
-```bash
-conda env create --file environment.yml
-conda activate oci-langgraph-checkpoint-blueprint
-```
-
-For an existing environment, install or update the declared packages with:
-
-```bash
-conda env update --name oci-langgraph-checkpoint-blueprint --file environment.yml
-```
-
-The initial environment includes LangGraph, the `langgraph-oracledb` checkpoint saver, the Oracle Python driver, local environment loading, and the project’s test, coverage, formatting, and linting tools. Model-provider and web-framework dependencies will be introduced only when their feature specifications require them.
-
-## Validate the ADB connection
-
-Copy `.env.sample` to `.env`, populate the local ADB credentials and extracted wallet directory, then run this command from the repository root:
-
-```bash
-python -m test_db_connection
-```
-
-The utility prints the non-sensitive `DB_USER`, `DB_DSN`, and `WALLET_DIR` values before it connects, then executes `SELECT 1 FROM dual`. It prints `ADB connection OK.` on success and never prints `DB_PWD` or `WALLET_PWD`.
+For the complete local setup, including Conda environment creation and the ADB connectivity test, see [QUICKSTART.md](QUICKSTART.md).
 
 Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
 
