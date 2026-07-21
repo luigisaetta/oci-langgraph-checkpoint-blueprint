@@ -55,13 +55,22 @@ conda activate oci-langgraph-checkpoint-blueprint
 python -m examples.example02_hitl_sse.client "Prepare the quarterly report"
 ```
 
-The client displays streamed node updates. When it receives `approval_required`, it displays the draft and asks for one of these values:
+The client displays a readable workflow timeline alongside the complete streamed event payloads. For example:
+
+```text
+[1/3] Intake completed | Request accepted and normalized.
+[2/3] Draft completed | Draft is ready for human review.
+[3/3] Waiting for your approval | Review the draft below.
+```
+
+When it receives `approval_required`, it also displays the draft and asks for one of these values:
 
 ```text
 Decision [approve/reject]: approve
 ```
 
 It submits that decision with the original thread ID, allowing LangGraph to load the ADB checkpoint and resume the paused `ApprovalNode`.
+After the decision, the timeline confirms the recorded approval step and the final workflow status, while the raw SSE payload remains available for technical inspection.
 
 ## API contract
 

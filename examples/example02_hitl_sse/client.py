@@ -41,6 +41,46 @@ def format_client_header(api_url: str, config: ADBConnectionConfig) -> str:
     )
 
 
+def format_workflow_timeline_event(
+    event_name: str,
+    event_payload: dict[str, Any],
+) -> str | None:
+    """Create a concise, end-user-oriented summary for one SSE event.
+
+    Args:
+        event_name: Name of the SSE event received from the API.
+        event_payload: Decoded JSON payload associated with the event.
+
+    Returns:
+        A human-readable workflow status line, or ``None`` for unknown events.
+    """
+    timeline_event = None
+    if event_name == "run_started":
+        timeline_event = f"[Workflow] Started | Thread ID: {event_payload['thread_id']}"
+    elif event_name == "node_update":
+        node_name = event_payload.get("node")
+        update = event_payload.get("update", {})
+        if node_name == "intake":
+            timeline_event = "[1/3] Intake completed | Request accepted and normalized."
+        elif node_name == "draft":
+            timeline_event = "[2/3] Draft completed | Draft is ready for human review."
+        elif node_name == "approval":
+            timeline_event = (
+                "[3/3] Approval completed | "
+                f"Decision recorded: {update.get('approval_decision', 'unknown')}."
+            )
+    elif event_name == "approval_required":
+        timeline_event = "[3/3] Waiting for your approval | Review the draft below."
+    elif event_name == "run_completed":
+        status = event_payload.get("state", {}).get("status", "unknown")
+        timeline_event = f"[Workflow] Completed | Final status: {status}."
+    elif event_name == "error":
+        timeline_event = (
+            f"[Workflow] Error | {event_payload.get('message', 'Unknown error.')}"
+        )
+    return timeline_event
+
+
 async def iter_sse_events(
     response: httpx.Response,
 ) -> AsyncIterator[tuple[str, dict[str, Any]]]:
@@ -91,6 +131,12 @@ async def consume_stream(
     async with client.stream(method, url, json=payload) as response:
         response.raise_for_status()
         async for event_name, event_payload in iter_sse_events(response):
+            timeline_event = format_workflow_timeline_event(
+                event_name,
+                event_payload,
+            )
+            if timeline_event:
+                print(timeline_event)
             print(f"[{event_name}] {json.dumps(event_payload, indent=2)}")
             print()
             thread_id = event_payload.get("thread_id", thread_id)

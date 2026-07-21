@@ -47,8 +47,7 @@ The Conda environment must explicitly include:
 ## Client Contract
 
 1. Provide a Python client runnable from the repository root.
-2. The client must display each streamed node update, followed by a blank line for readability.
-   Before connecting, it must display a titled header containing the API URL and the non-sensitive `DB_USER`, `DB_DSN`, and `WALLET_DIR` local configuration values.
+2. The client must display a concise workflow timeline alongside each streamed event payload, followed by a blank line for readability. The timeline must identify completion of Intake, Draft, and Approval as steps 1/3, 2/3, and 3/3; clearly identify when human approval is pending; and report workflow completion or an error. Before connecting, it must display a titled header containing the API URL and the non-sensitive `DB_USER`, `DB_DSN`, and `WALLET_DIR` local configuration values.
 3. On `approval_required`, it must prompt the user for `approve` or `reject`.
 4. It must call the decision endpoint with the original thread ID and display the resumed stream until completion.
 

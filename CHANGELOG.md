@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * Example 02 client now starts with a titled safe-configuration header.
 * Example 02 now documents how to verify the persisted HITL pause and final decision checkpoint in ADB.
 * Example 02 graph nodes are now callable classes, allowing their instances to be registered directly with LangGraph.
+* Example 02 client now presents a three-step workflow timeline alongside the detailed SSE event payloads.
 
 ## Changelog policy
 
