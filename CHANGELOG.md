@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * A documented Oracle ADB connection utility, available through `python -m test_db_connection`, with unit tests that do not require OCI resources.
 * `QUICKSTART.md` for local environment setup and ADB connection validation.
 * This changelog and the documentation-structure specification that governs its ongoing maintenance.
+* README badges for Black, Pylint, pytest, Python 3.11+, and the spec-driven development workflow.
 
 ### Changed
 

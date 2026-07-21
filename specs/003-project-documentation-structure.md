@@ -18,10 +18,12 @@ The repository now includes an executable ADB connectivity utility and a defined
    * How to copy and populate `.env` from `.env.sample` without committing credentials.
    * How to run `python -m test_db_connection` from the repository root and interpret its outcome.
 5. The main `README.md` must link to `QUICKSTART.md` and must not duplicate the detailed Conda setup or ADB connectivity-test instructions.
+6. The main `README.md` must display badges for Black, Pylint, pytest, Python 3.11+, and spec-driven development. Each badge must link to its relevant tool or repository documentation.
 
 ## Acceptance Criteria
 
 * `CHANGELOG.md` exists and contains entries for all features introduced before this specification.
 * `QUICKSTART.md` contains a runnable Conda creation command and the ADB connectivity test command.
 * `README.md` has a prominent Quick Start link and retains no duplicated detailed instructions for those two workflows.
+* `README.md` displays all five required badges below its title.
 * Documentation never includes ADB passwords, wallet contents, or environment-specific credential values.

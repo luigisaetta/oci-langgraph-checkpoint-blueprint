@@ -1,5 +1,11 @@
 # OCI LangGraph Checkpoint Blueprint
 
+[![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linting: Pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://pylint.readthedocs.io/)
+[![Tests: pytest](https://img.shields.io/badge/tests-pytest-0A9EDC)](https://docs.pytest.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Development: Spec-driven](https://img.shields.io/badge/development-spec--driven-6E40C9)](specs/)
+
 **Turn an agent run into a durable business process.**
 
 This repository is a practical blueprint for building enterprise-grade LangGraph workflows and agents whose state survives beyond a single process or request. The demo explores how to persist LangGraph checkpoints in **Oracle Autonomous Database (Oracle ADB)** on Oracle Cloud Infrastructure (OCI).
