@@ -33,7 +33,7 @@ Each node is a separate callable class: it implements `__call__(state)` and is r
 
 ## Prerequisites
 
-Complete the repository [Quick Start](../../QUICKSTART.md) first. The same root `.env` and ADB wallet configuration are used here. The ADB user needs permission to create the checkpoint tables the first time the API starts.
+Complete the repository [Quick Start](../../QUICKSTART.md) first. The same root `.env` and ADB wallet configuration are used here. Set `SERVER_PORT=8080` in `.env` to use the default local API port. The ADB user needs permission to create the checkpoint tables the first time the API starts.
 
 ## Start the API
 
@@ -41,10 +41,10 @@ From the repository root, activate the environment and start the development ser
 
 ```bash
 conda activate oci-langgraph-checkpoint-blueprint
-uvicorn examples.example02_hitl_sse.app:app --reload
+./examples/example02_hitl_sse/start_server.sh
 ```
 
-At startup, `OracleSaver.setup()` creates or upgrades the ADB checkpoint schema. Each API stream opens a wallet-based ADB connection and compiles the graph with `OracleSaver`.
+The script reads `SERVER_PORT` from the repository-root `.env` and starts Uvicorn at `http://127.0.0.1:8080` by default. At startup, `OracleSaver.setup()` creates or upgrades the ADB checkpoint schema. Each API stream opens a wallet-based ADB connection and compiles the graph with `OracleSaver`.
 
 ## Run the Python client
 
@@ -54,6 +54,8 @@ In a second terminal, from the repository root:
 conda activate oci-langgraph-checkpoint-blueprint
 python -m examples.example02_hitl_sse.client "Prepare the quarterly report"
 ```
+
+The client uses `http://127.0.0.1:8080` by default. Use `--api-url` only when connecting to a different host or port.
 
 The client displays a readable workflow timeline alongside the complete streamed event payloads. For example:
 

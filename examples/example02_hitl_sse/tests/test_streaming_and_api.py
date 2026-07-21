@@ -8,10 +8,12 @@ Description: Tests SSE formatting, stream translation, and FastAPI request valid
 from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any
+from unittest.mock import Mock
 
 from fastapi.testclient import TestClient
 from langgraph.types import Command
 
+from examples.example02_hitl_sse import app as example_app
 from examples.example02_hitl_sse.app import create_app
 from examples.example02_hitl_sse.streaming import format_sse, stream_graph_updates
 
@@ -107,3 +109,20 @@ def test_api_validates_start_and_decision_requests_without_database() -> None:
     assert calls[0][2] is False
     assert isinstance(calls[1][1], Command)
     assert calls[1][2] is True
+
+
+def test_main_runs_uvicorn_on_the_default_example_port(
+    monkeypatch: Any,
+) -> None:
+    """The module entry point keeps the documented local port as its default."""
+    run_server = Mock()
+    monkeypatch.setattr(example_app.uvicorn, "run", run_server)
+
+    example_app.main()
+
+    run_server.assert_called_once_with(
+        "examples.example02_hitl_sse.app:app",
+        host="127.0.0.1",
+        port=8080,
+        reload=True,
+    )

@@ -16,7 +16,7 @@ import httpx
 from utils.adb_connection import ADBConnectionConfig, format_connection_header
 from utils.adb_connection import load_connection_config
 
-DEFAULT_API_URL = "http://127.0.0.1:8000"
+DEFAULT_API_URL = "http://127.0.0.1:8080"
 
 
 def format_client_header(api_url: str, config: ADBConnectionConfig) -> str:

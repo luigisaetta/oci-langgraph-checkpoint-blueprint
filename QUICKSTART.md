@@ -42,6 +42,7 @@ Fill in these local values in `.env`:
 | `WALLET_DIR` | Path to the extracted ADB wallet directory. |
 | `WALLET_PWD` | Password set when the wallet was downloaded. |
 | `DB_DSN` | ADB service alias or connection string. |
+| `SERVER_PORT` | Local FastAPI port for Example 02. Use `8080` by default. |
 
 Never commit `.env` or the wallet directory. Both are excluded by `.gitignore`.
 

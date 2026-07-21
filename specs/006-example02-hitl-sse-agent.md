@@ -43,6 +43,7 @@ The Conda environment must explicitly include:
    * `run_completed` once the graph reaches the end; or
    * `error` for safe, actionable failures.
 4. SSE payloads must be JSON and must never include `DB_PWD` or `WALLET_PWD`.
+5. The development server must use `SERVER_PORT` from the repository-root `.env`; its default value is `8080`.
 
 ## Client Contract
 
@@ -53,7 +54,7 @@ The Conda environment must explicitly include:
 
 ## Documentation and Testing
 
-1. The example README must document setup, server and client commands, API endpoints, the HITL lifecycle, thread persistence, and ADB inspection queries. It must include a step-by-step procedure for verifying the persisted approval pause and the final checkpoint after a decision.
+1. The example README must document setup, the `SERVER_PORT` configuration, server and client commands, API endpoints, the HITL lifecycle, thread persistence, and ADB inspection queries. It must include a step-by-step procedure for verifying the persisted approval pause and the final checkpoint after a decision.
 2. Unit tests must validate node transformations, interrupt/resume behaviour with an in-memory saver, SSE formatting, and API request validation without requiring OCI or ADB.
 3. The main README must link to Example 02, and `CHANGELOG.md` must record the feature.
 
@@ -63,4 +64,5 @@ The Conda environment must explicitly include:
 * Resuming the same thread with `approve` reaches `run_completed` and produces an approved final state.
 * Resuming with `reject` produces a rejected final state.
 * The Python client uses the exact thread ID emitted by `run_started` when submitting the decision.
+* `examples/example02_hitl_sse/start_server.sh` starts Uvicorn using the configured `SERVER_PORT`, defaulting to `8080`.
 * All automated tests run without live OCI or ADB access.
