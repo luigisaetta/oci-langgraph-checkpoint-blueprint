@@ -19,6 +19,7 @@ The repository now includes an executable ADB connectivity utility and a defined
    * How to run `python -m test_db_connection` from the repository root and interpret its outcome.
 5. The main `README.md` must link to `QUICKSTART.md` and must not duplicate the detailed Conda setup or ADB connectivity-test instructions.
 6. The main `README.md` must display badges for Black, Pylint, pytest, Python 3.11+, and spec-driven development. Each badge must link to its relevant tool or repository documentation.
+7. The main `README.md` must include an examples table. Each row must link to the example documentation and give a concise explanation of the checkpointing pattern it demonstrates.
 
 ## Acceptance Criteria
 
@@ -26,4 +27,5 @@ The repository now includes an executable ADB connectivity utility and a defined
 * `QUICKSTART.md` contains a runnable Conda creation command and the ADB connectivity test command.
 * `README.md` has a prominent Quick Start link and retains no duplicated detailed instructions for those two workflows.
 * `README.md` displays all five required badges below its title.
+* `README.md` presents available examples in a table with a link and concise summary for each one.
 * Documentation never includes ADB passwords, wallet contents, or environment-specific credential values.

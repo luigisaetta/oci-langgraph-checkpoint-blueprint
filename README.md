@@ -8,7 +8,7 @@
 
 **Turn an agent run into a durable business process.**
 
-This repository is a practical blueprint for building enterprise-grade LangGraph workflows and agents whose state survives beyond a single process or request. The demo explores how to persist LangGraph checkpoints in **Oracle Autonomous Database (Oracle ADB)** on Oracle Cloud Infrastructure (OCI).
+This repository is a practical blueprint for building enterprise-grade LangGraph workflows and agents whose state survives beyond a single process or request. It shows how to persist LangGraph checkpoints in **Oracle Autonomous Database (Oracle ADB)** on Oracle Cloud Infrastructure (OCI), from a minimal durable workflow to a streamed human-in-the-loop agent.
 
 Instead of treating an agent interaction as an ephemeral chain of calls, the blueprint treats it as a workflow that can be inspected, paused, resumed, and recovered. This is a key step in moving from an interesting agent prototype to a dependable enterprise capability.
 
@@ -27,6 +27,7 @@ The project will provide a focused, end-to-end demo of:
 * Persisting checkpoint data in Oracle ADB.
 * Resuming a workflow from its saved state after interruption.
 * Keeping independent workflow threads isolated.
+* Streaming agent progress to an API client while a workflow waits for human approval.
 * Testing the LangGraph and database integration boundaries without requiring live OCI resources for unit tests.
 
 ## The idea in one picture
@@ -43,7 +44,8 @@ User or application request
         Oracle ADB checkpoint persistence
                          |
                          v
-  Resume, recover, inspect, or continue later
+  Stream progress, pause for approval,
+  resume, recover, inspect, or continue later
 ```
 
 ## Intended audience
@@ -60,12 +62,14 @@ For the complete local setup, including Conda environment creation and the ADB c
 
 ## Examples
 
-The examples progress from the smallest checkpointed workflow to more advanced enterprise patterns.
+The examples progress from the smallest checkpointed workflow to a durable, interactive enterprise pattern.
 
-* [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md)
-* [Example 02: Human-in-the-Loop Agent with FastAPI SSE](examples/example02_hitl_sse/README.md)
+| Example | Summary |
+| --- | --- |
+| [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md) | A minimal one-node graph that creates durable checkpoints in Oracle ADB and shows how to inspect the persisted thread history. |
+| [Example 02: Human-in-the-Loop Agent with FastAPI SSE](examples/example02_hitl_sse/README.md) | A three-node FastAPI agent that streams SSE progress, pauses for an approval or rejection, and resumes the same Oracle ADB checkpoint thread. |
 
-Setup instructions, configuration requirements, runnable examples, and OCI deployment guidance will be added alongside the corresponding implementation.
+Each example includes its own prerequisites, runnable commands, configuration requirements, ADB inspection queries, and OCI guidance where applicable.
 
 ## Design principles
 
