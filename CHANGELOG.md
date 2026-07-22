@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+* Example 02 now includes a standalone, code-first guide to Oracle ADB checkpointing and LangGraph Human-in-the-Loop pause and resume patterns, linked to the complete implementation.
 * The Quick Start now documents creating a least-privilege ADB checkpoint schema owner before configuring the local connection, including the privileges and tablespace quota required by `OracleSaver.setup()`.
 * Repository governance in `AGENTS.md`, including the spec-driven development workflow, quality expectations, and security rules.
 * A reproducible Conda environment for Python 3.11, LangGraph, `langgraph-oracledb`, `oracledb`, and the project quality tools.

@@ -4,6 +4,8 @@ This example builds on Example 01 by exposing a durable LangGraph agent through 
 
 The workflow is deterministic on purpose: it makes the Human-in-the-Loop (HITL), persistence, streaming, and API boundaries easy to inspect without requiring an LLM provider.
 
+For a minimal, code-first explanation of the Oracle ADB checkpoint and HITL patterns before the full application details, see [LangGraph Patterns: Oracle ADB Checkpoints and Human-in-the-Loop](LANGGRAPH_PATTERNS.md).
+
 ## Agent flow
 
 ```text
