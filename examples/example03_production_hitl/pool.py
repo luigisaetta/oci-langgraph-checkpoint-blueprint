@@ -8,6 +8,7 @@ Description: Loads and creates the Oracle ADB connection pool used by Example 03
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
+from urllib.parse import urlparse
 
 import oracledb
 from dotenv import dotenv_values
@@ -19,10 +20,16 @@ from utils.adb_connection import (
 )
 
 POOL_VARIABLES = ("DB_POOL_MIN", "DB_POOL_MAX", "DB_POOL_INCREMENT")
+NEXTJS_UI_ORIGIN_VARIABLE = "NEXTJS_UI_ORIGIN"
+DEFAULT_NEXTJS_UI_ORIGIN = "http://127.0.0.1:3000"
 
 
 class PoolConfigurationError(ValueError):
     """Raised when Example 03 connection-pool settings are invalid."""
+
+
+class UIOriginConfigurationError(ValueError):
+    """Raised when the configured Next.js development origin is invalid."""
 
 
 @dataclass(frozen=True)
@@ -107,3 +114,45 @@ def load_example03_configuration() -> tuple[ADBConnectionConfig, PoolConfigurati
     """
     environment = dotenv_values(dotenv_path=DEFAULT_ENV_FILE)
     return load_connection_config(environment), load_pool_configuration(environment)
+
+
+def load_nextjs_ui_origin(
+    environment: Mapping[str, str | None] | None = None,
+    dotenv_path: Path = DEFAULT_ENV_FILE,
+) -> str:
+    """Load the allowed local Next.js UI origin for Example 04.
+
+    Args:
+        environment: Optional settings mapping for tests or programmatic use.
+        dotenv_path: Dotenv file read when ``environment`` is omitted.
+
+    Returns:
+        A normalized HTTP(S) origin without a trailing slash.
+
+    Raises:
+        UIOriginConfigurationError: If the configured value is not a bare HTTP(S)
+            origin.
+    """
+    if environment is None:
+        environment = dotenv_values(dotenv_path=dotenv_path)
+
+    origin = environment.get(NEXTJS_UI_ORIGIN_VARIABLE) or DEFAULT_NEXTJS_UI_ORIGIN
+    normalized_origin = origin.strip().rstrip("/")
+    parsed_origin = urlparse(normalized_origin)
+    is_bare_origin = not any(
+        (
+            parsed_origin.path,
+            parsed_origin.params,
+            parsed_origin.query,
+            parsed_origin.fragment,
+        )
+    )
+    if (
+        parsed_origin.scheme not in {"http", "https"}
+        or not parsed_origin.netloc
+        or not is_bare_origin
+    ):
+        raise UIOriginConfigurationError(
+            f"{NEXTJS_UI_ORIGIN_VARIABLE} must be an HTTP(S) origin without a path."
+        )
+    return normalized_origin

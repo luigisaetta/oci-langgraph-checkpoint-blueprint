@@ -27,8 +27,11 @@ Copy `.env.sample` to `.env` if needed, then configure the normal ADB wallet var
 | `DB_POOL_MIN` | Yes | Connections created at startup. | `2` |
 | `DB_POOL_MAX` | Yes | Maximum ADB connections used by this server process. | `10` |
 | `DB_POOL_INCREMENT` | Yes | Connections added when the pool grows. | `1` |
+| `NEXTJS_UI_ORIGIN` | No | Exact Next.js browser origin permitted by CORS for Example 04. | `http://127.0.0.1:3000` |
 
 All pool values must be positive integers, and `DB_POOL_MIN` must not be greater than `DB_POOL_MAX`. Size the maximum according to expected concurrent load and the connection limit of the target ADB service; the example values are for local demonstration only.
+
+For the browser UI demonstration, `NEXTJS_UI_ORIGIN` must be a bare `http` or `https` origin with no path. Example 03 allows that one origin through CORS and does not enable credentialed cross-origin requests. See [Example 04](../example04_nextjs_ui/README.md) for the Next.js client.
 
 ## Start the server
 

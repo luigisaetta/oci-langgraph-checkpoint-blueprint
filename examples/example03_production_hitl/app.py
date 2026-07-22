@@ -13,6 +13,7 @@ from uuid import uuid4
 import oracledb
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langgraph.types import Command
 from langgraph_oracledb.checkpoint.oracle import OracleSaver
@@ -23,6 +24,7 @@ from examples.example02_hitl_sse.streaming import format_sse, stream_graph_updat
 from examples.example03_production_hitl.pool import (
     create_adb_pool,
     load_example03_configuration,
+    load_nextjs_ui_origin,
 )
 
 EXAMPLE_THREAD_ID_PREFIX = "example03-"
@@ -159,6 +161,7 @@ def create_app(
     streamer: RunStreamer = stream_run,
     status_reader: StatusReader = read_run_status,
     initialize_database: bool = True,
+    ui_origin: str | None = None,
 ) -> FastAPI:
     """Create the Example 03 FastAPI application.
 
@@ -166,6 +169,8 @@ def create_app(
         streamer: Function that runs the graph and produces SSE events.
         status_reader: Function that reads persisted workflow state.
         initialize_database: Whether the lifespan creates the ADB pool and schema.
+        ui_origin: Allowed Next.js browser origin. When omitted, the value is read
+            from the local configuration with a safe local-development default.
 
     Returns:
         A FastAPI application configured for pooled durable workflows.
@@ -196,6 +201,13 @@ def create_app(
     application = FastAPI(
         title="Example 03 Production HITL Recovery Agent",
         lifespan=lifespan,
+    )
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=[ui_origin or load_nextjs_ui_origin()],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type"],
     )
     application.state.adb_pool = None
 

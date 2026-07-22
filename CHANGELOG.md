@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+* Example 04: a standalone Next.js browser UI for the Example 03 HTTP/SSE workflow API, with a streamed event timeline, durable thread reload, approval controls, unit tests, and an operational runbook.
 * A root-level `OracleSaver` best-practices guide covering connection pooling, checkpoint-data security, retention, authorization, idempotent side effects, concurrency, operations, and production validation.
 * Example 03 now includes a dedicated recovery-demonstration runbook that separates each user action from the expected observable result.
 * Example 03: a production-oriented FastAPI HITL service with an ADB connection pool, durable run-status API, sequentially idempotent final decisions, and a client-led server-restart recovery demonstration.

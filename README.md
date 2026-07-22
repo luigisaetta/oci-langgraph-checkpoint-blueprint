@@ -71,6 +71,7 @@ The examples progress from the smallest checkpointed workflow to a durable, inte
 | [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md) | A minimal one-node graph that creates durable checkpoints in Oracle ADB and shows how to inspect the persisted thread history. |
 | [Example 02: Human-in-the-Loop Agent with FastAPI SSE](examples/example02_hitl_sse/README.md) | A three-node FastAPI agent that streams SSE progress, pauses for an approval or rejection, and resumes the same Oracle ADB checkpoint thread. |
 | [Example 03: Production-Oriented HITL Recovery with ADB Pooling](examples/example03_production_hitl/README.md) | A pooled FastAPI service and three-command client that prove a paused approval thread can be inspected and resumed after a server restart. |
+| [Example 04: Next.js Durable Workflow UI](examples/example04_nextjs_ui/README.md) | A browser UI that uses only Example 03 HTTP/SSE endpoints to visualize a durable workflow, reload a persisted thread, and submit human approval. |
 
 Each example includes its own prerequisites, runnable commands, configuration requirements, ADB inspection queries, and OCI guidance where applicable.
 

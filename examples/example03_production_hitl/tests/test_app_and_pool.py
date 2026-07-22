@@ -23,6 +23,8 @@ from examples.example03_production_hitl.app import (
 from examples.example03_production_hitl.pool import (
     create_adb_pool,
     PoolConfigurationError,
+    UIOriginConfigurationError,
+    load_nextjs_ui_origin,
     load_pool_configuration,
 )
 
@@ -33,6 +35,16 @@ def test_pool_configuration_rejects_invalid_sizes() -> None:
         load_pool_configuration(
             {"DB_POOL_MIN": "3", "DB_POOL_MAX": "2", "DB_POOL_INCREMENT": "1"}
         )
+
+
+def test_nextjs_ui_origin_requires_a_bare_http_origin() -> None:
+    """The API permits one explicit browser origin and rejects URL paths."""
+    assert (
+        load_nextjs_ui_origin({"NEXTJS_UI_ORIGIN": "http://localhost:3000/"})
+        == "http://localhost:3000"
+    )
+    with pytest.raises(UIOriginConfigurationError, match="NEXTJS_UI_ORIGIN"):
+        load_nextjs_ui_origin({"NEXTJS_UI_ORIGIN": "https://ui.example/app"})
 
     with pytest.raises(PoolConfigurationError, match="DB_POOL_INCREMENT"):
         load_pool_configuration(
@@ -149,6 +161,33 @@ def test_readiness_acquires_a_connection_and_main_uses_example_port(
     monkeypatch.setattr(example_app.uvicorn, "run", run_server)
     example_app.main()
     assert run_server.call_args.kwargs["port"] == 8081
+
+
+def test_api_allows_only_the_configured_nextjs_origin() -> None:
+    """The Example 04 browser origin is explicitly permitted through CORS."""
+    application = create_app(
+        initialize_database=False, ui_origin="http://127.0.0.1:3000"
+    )
+    application.state.adb_pool = object()
+    with TestClient(application) as client:
+        response = client.options(
+            "/runs",
+            headers={
+                "Origin": "http://127.0.0.1:3000",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+        rejected_response = client.options(
+            "/runs",
+            headers={
+                "Origin": "http://127.0.0.1:3001",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3000"
+    assert rejected_response.status_code == 400
 
 
 def test_status_and_sequential_decision_idempotency_without_database() -> None:
