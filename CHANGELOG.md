@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+* Example 03 now includes a dedicated recovery-demonstration runbook that separates each user action from the expected observable result.
+* Example 03: a production-oriented FastAPI HITL service with an ADB connection pool, durable run-status API, sequentially idempotent final decisions, and a client-led server-restart recovery demonstration.
 * Example 02 now includes a standalone, code-first guide to Oracle ADB checkpointing and LangGraph Human-in-the-Loop pause and resume patterns, linked to the complete implementation.
 * The Quick Start now documents creating a least-privilege ADB checkpoint schema owner before configuring the local connection, including the privileges and tablespace quota required by `OracleSaver.setup()`.
 * Repository governance in `AGENTS.md`, including the spec-driven development workflow, quality expectations, and security rules.
