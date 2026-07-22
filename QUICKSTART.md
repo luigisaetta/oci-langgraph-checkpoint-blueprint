@@ -25,6 +25,21 @@ conda env update --name oci-langgraph-checkpoint-blueprint --file environment.ym
 
 The environment includes LangGraph, `langgraph-oracledb`, the Oracle Python driver, FastAPI, Uvicorn, HTTPX, and the project test and quality tools.
 
+## Create the checkpoint schema owner in ADB
+
+Before configuring the application connection, connect to ADB as an administrator (for example, `ADMIN`) through Database Actions or SQL Developer. Create a dedicated schema owner for the LangGraph checkpoint tables, then grant only the privileges required by `OracleSaver.setup()`:
+
+```sql
+CREATE USER langgraph_checkpoint_owner IDENTIFIED BY "<strong-password>";
+
+GRANT CREATE SESSION, CREATE TABLE, CREATE INDEX TO langgraph_checkpoint_owner;
+ALTER USER langgraph_checkpoint_owner QUOTA UNLIMITED ON DATA;
+```
+
+Replace `langgraph_checkpoint_owner` and `<strong-password>` with values that meet your organisation's naming and password policies. Run these statements as an ADB administrator, not as the application user.
+
+Use this schema owner as `DB_USER`. On its first execution, `OracleSaver.setup()` creates the `checkpoint_migrations`, `checkpoints`, `checkpoint_blobs`, and `checkpoint_writes` tables, as well as indexes used to query them. The `CREATE TABLE`, `CREATE INDEX`, and `DATA` tablespace quota are therefore required. Do not grant broader roles or use the `ADMIN` account for the application connection.
+
 ## Configure the local ADB connection
 
 If `.env` does not exist yet, create it from the safe template:

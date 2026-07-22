@@ -15,6 +15,7 @@ The repository now includes an executable ADB connectivity utility and a defined
 3. Future significant features, fixes, refactorings, specifications, deployment changes, documentation updates, and test-strategy changes must be recorded in `CHANGELOG.md`.
 4. The repository must include a root-level `QUICKSTART.md` containing:
    * How to create and activate the `oci-langgraph-checkpoint-blueprint` Conda environment.
+   * How an ADB administrator creates a dedicated checkpoint schema owner, with the `CREATE SESSION`, `CREATE TABLE`, and `CREATE INDEX` privileges and a `DATA` tablespace quota required by `OracleSaver.setup()`.
    * How to copy and populate `.env` from `.env.sample` without committing credentials.
    * How to run `python -m test_db_connection` from the repository root and interpret its outcome.
 5. The main `README.md` must link to `QUICKSTART.md` and must not duplicate the detailed Conda setup or ADB connectivity-test instructions.
@@ -24,7 +25,7 @@ The repository now includes an executable ADB connectivity utility and a defined
 ## Acceptance Criteria
 
 * `CHANGELOG.md` exists and contains entries for all features introduced before this specification.
-* `QUICKSTART.md` contains a runnable Conda creation command and the ADB connectivity test command.
+* `QUICKSTART.md` contains a runnable Conda creation command, the documented dedicated ADB checkpoint-schema-owner setup before the local connection configuration, and the ADB connectivity test command.
 * `README.md` has a prominent Quick Start link and retains no duplicated detailed instructions for those two workflows.
 * `README.md` displays all five required badges below its title.
 * `README.md` presents available examples in a table with a link and concise summary for each one.
