@@ -60,6 +60,8 @@ The repository is being developed using a spec-driven workflow. Each significant
 
 For the complete local setup, including Conda environment creation and the ADB connectivity test, see [QUICKSTART.md](QUICKSTART.md).
 
+For production-oriented guidance on connection pooling, sensitive checkpoint state, retention, concurrency, and recovery testing, see [Suggested Best Practices for `OracleSaver`](ORACLE_SAVER_BEST_PRACTICES.md).
+
 ## Examples
 
 The examples progress from the smallest checkpointed workflow to a durable, interactive enterprise pattern.
