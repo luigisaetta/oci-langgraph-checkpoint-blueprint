@@ -98,7 +98,7 @@ export default function HomePage() {
       if (node === "intake") {
         setStage("intake");
       }
-      if (node === "draft") {
+      if (node === "offer_generation") {
         setStage("draft");
       }
     }
@@ -122,7 +122,8 @@ export default function HomePage() {
             thread_id: finalThreadId,
             status,
             draft: finalDraft,
-            products: [],
+            requested_object: null,
+            quantity: null,
             approval_decision:
               approvalDecision === "approve" || approvalDecision === "reject"
                 ? approvalDecision
@@ -215,10 +216,10 @@ export default function HomePage() {
     <main>
       <section className="hero">
         <p className="eyebrow">Example 04 · IT procurement agent</p>
-        <h1>Durable IT purchasing, made visible.</h1>
+        <h1>IT procurement, made durable.</h1>
         <p className="hero-copy">
           Search the demo IT catalogue, review a simulated purchase order, then
-          pause, reload, and resume it. Durable state remains in <span>Oracle</span>
+          pause, reload, and resume it. Durable state remains in <span>Oracle</span>{" "}
           ADB through the backend.
         </p>
       </section>
@@ -344,7 +345,7 @@ export default function HomePage() {
               onClick={() => handleDecision("approve")}
               disabled={isStreaming}
             >
-              Approve simulated order
+              Approve
             </button>
           </div>
         </section>

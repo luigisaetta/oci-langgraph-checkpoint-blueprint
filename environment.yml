@@ -10,6 +10,7 @@ dependencies:
       - langgraph
       - langgraph-oracledb
       - oracledb
+      - openai
       - python-dotenv
       - fastapi
       - uvicorn

@@ -6,7 +6,8 @@ export interface RunStatus {
   thread_id: string;
   status: string;
   draft: string | null;
-  products: Array<Record<string, string | number>>;
+  requested_object: string | null;
+  quantity: number | null;
   approval_decision: Decision | null;
   approval_required: boolean;
 }
@@ -34,7 +35,9 @@ export function isRunStatus(value: unknown): value is RunStatus {
     typeof candidate.thread_id === "string" &&
     typeof candidate.status === "string" &&
     (typeof candidate.draft === "string" || candidate.draft === null) &&
-    Array.isArray(candidate.products) &&
+    (typeof candidate.requested_object === "string" ||
+      candidate.requested_object === null) &&
+    (typeof candidate.quantity === "number" || candidate.quantity === null) &&
     (candidate.approval_decision === "approve" ||
       candidate.approval_decision === "reject" ||
       candidate.approval_decision === null) &&

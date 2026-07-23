@@ -68,7 +68,8 @@ class RunStatus(BaseModel):
     thread_id: str
     status: str
     draft: str | None = None
-    products: list[dict[str, str | int]] = []
+    requested_object: str | None = None
+    quantity: int | None = None
     approval_decision: str | None = None
     approval_required: bool
 
@@ -101,7 +102,8 @@ def read_run_status(pool: Any, thread_id: str) -> RunStatus | None:
         thread_id=thread_id,
         status=current_status,
         draft=state_values.get("draft"),
-        products=state_values.get("products", []),
+        requested_object=state_values.get("requested_object"),
+        quantity=state_values.get("quantity"),
         approval_decision=state_values.get("approval_decision"),
         approval_required=current_status == "awaiting_approval",
     )
@@ -124,7 +126,7 @@ def stream_run(
     try:
         graph = build_procurement_graph(OracleSaver(pool))
         yield from stream_graph_updates(graph, graph_input, thread_id, is_resume)
-    except (oracledb.Error, OSError, ValueError) as error:
+    except (oracledb.Error, OSError, RuntimeError, ValueError) as error:
         yield format_sse(
             "error",
             {

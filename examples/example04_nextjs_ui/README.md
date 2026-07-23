@@ -1,10 +1,10 @@
 # Example 04: Durable IT Procurement Agent and UI
 
 Example 04 is an independent, concrete LangGraph demonstration. A FastAPI
-procurement agent searches a small deterministic IT catalogue, creates a
-simulated purchase-order proposal, pauses for a human decision, and persists
-every state transition in Oracle ADB. Its Next.js UI consumes only this
-example's HTTP/SSE API.
+procurement agent uses OCI Generative AI's OpenAI-compatible Responses API to
+extract a structured IT request and generate a simulated purchase-order offer,
+then pauses for a human decision and persists every state transition in Oracle
+ADB. Its Next.js UI consumes only this example's HTTP/SSE API.
 
 ```text
 Next.js UI -> Example 04 FastAPI -> LangGraph / OracleSaver -> Oracle ADB
@@ -13,14 +13,25 @@ Next.js UI -> Example 04 FastAPI -> LangGraph / OracleSaver -> Oracle ADB
 The demonstration never calls a supplier, reserves stock, charges a payment
 method, or creates a real order.
 
-## Catalogue and workflow
+## LLM-assisted workflow
 
-The embedded catalogue includes a wireless mouse, wireless keyboard, business
-phone, and USB-C battery pack. Requests may be English or use the Italian
-terms `tastiera`, `cellulare`, and `batterie`. A quantity such as `2` is used;
-otherwise the proposal defaults to one unit.
+The first node sends the natural-language request to an OCI Responses API call
+with strict structured output. The persisted JSON has this shape:
 
-For example, `Order 2 wireless mice` produces a EUR 58 simulated proposal.
+```json
+{
+  "requested_object": "wireless ergonomic mouse",
+  "quantity": 2
+}
+```
+
+The second node sends exactly that JSON to a separate OCI Responses API call.
+It produces a concise illustrative offer in EUR, with an explicit availability
+assumption. The prompt forbids claims that a real supplier or inventory system
+was contacted.
+
+For example, `Order 2 wireless mice` is extracted as a request for two mice and
+then produces an LLM-generated simulated proposal.
 The durable lifecycle is **Started → Intake → Order proposal → Awaiting
 approval → Order completed**. Approving records `ordered`; rejecting records
 `rejected`.
@@ -36,11 +47,17 @@ configure the normal ADB wallet variables and the shared pool variables
 | `EXAMPLE04_SERVER_PORT` | No | API port. | `8082` |
 | `NEXTJS_UI_ORIGIN` | No | Exact permitted browser origin. | `http://127.0.0.1:3000` |
 | `NEXT_PUBLIC_EXAMPLE04_API_URL` | No | Browser-visible API base URL in `.env.local`. | `http://127.0.0.1:8082` |
+| `GENAI_API_KEY` | Yes | OCI Generative AI API key used by the backend only. | Leave empty in `.env.sample`. |
+| `REGION` | Yes | OCI region used to derive the inference endpoint. | `eu-frankfurt-1` |
+| `OCI_MODEL_ID` | No | OCI hosted Responses API model ID. | `openai.gpt-5.5` |
 
 Copy `.env.local.example` to `.env.local` in this directory. It contains no
-ADB credentials. The Python service uses the existing validated, wallet-based
-pool configuration pattern from Example 03, but owns its own pool and
-`example04-` checkpoint threads.
+ADB credentials. Set `GENAI_API_KEY` only in the root local `.env`; never
+commit it. The backend factory derives the OCI endpoint as
+`https://inference.generativeai.<REGION>.oci.oraclecloud.com/openai/v1`. The
+Python service uses the existing validated, wallet-based pool configuration
+pattern from Example 03, but owns its own pool and `example04-` checkpoint
+threads.
 
 ## Run locally
 

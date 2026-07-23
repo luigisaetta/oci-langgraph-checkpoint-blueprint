@@ -2,142 +2,99 @@
 Author: L. Saetta
 Date last modified: 2026-07-23
 License: MIT
-Description: Builds the deterministic IT procurement LangGraph workflow.
+Description: Builds the checkpointed LLM-assisted IT procurement LangGraph workflow.
 """
 
-import re
 from typing import Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
+from examples.example04_nextjs_ui.procurement_llm import (
+    ProcurementLlmService,
+    ProcurementRequest,
+)
+
 
 class ProcurementState(TypedDict, total=False):
-    """Stores the durable state of one simulated IT procurement request."""
+    """Stores durable state for an LLM-assisted simulated procurement request."""
 
     message: str
-    normalized_message: str
+    requested_object: str
     quantity: int
-    products: list[dict[str, str | int]]
     draft: str
     status: str
     approval_decision: str
 
 
-CATALOGUE = (
-    {
-        "sku": "MOU-100",
-        "name": "Wireless Ergonomic Mouse",
-        "keywords": "mouse mice wireless ergonomic",
-        "unit_price_eur": 29,
-    },
-    {
-        "sku": "KEY-200",
-        "name": "Compact Wireless Keyboard",
-        "keywords": "keyboard keyboards tastiera tastiere wireless",
-        "unit_price_eur": 49,
-    },
-    {
-        "sku": "PHO-300",
-        "name": "Business Android Phone",
-        "keywords": "phone phones mobile cellular smartphone cellulare cellulari telefono telefoni",
-        "unit_price_eur": 399,
-    },
-    {
-        "sku": "BAT-400",
-        "name": "USB-C Rechargeable Battery Pack",
-        "keywords": "battery batteries batteria batterie power bank usb-c",
-        "unit_price_eur": 39,
-    },
-)
+class IntakeNode:  # pylint: disable=too-few-public-methods
+    """Uses an LLM to extract structured procurement data from the user request."""
+
+    def __init__(self, llm_service: ProcurementLlmService) -> None:
+        """Store the LLM service used during graph execution.
+
+        Args:
+            llm_service: OCI Responses API service.
+        """
+        self._llm_service = llm_service
+
+    def __call__(self, state: ProcurementState) -> dict[str, str | int]:
+        """Extract the requested object and quantity from the raw message.
+
+        Args:
+            state: Current graph state containing the user message.
+
+        Returns:
+            Structured request fields and the next lifecycle status.
+
+        Raises:
+            ValueError: If the raw message is blank.
+        """
+        message = state["message"].strip()
+        if not message:
+            raise ValueError("The procurement request must not be blank.")
+        request = self._llm_service.extract_request(message)
+        return {
+            "requested_object": request.requested_object,
+            "quantity": request.quantity,
+            "status": "generating_offer",
+        }
 
 
-def requested_quantity(message: str) -> int:
-    """Return the requested positive quantity, defaulting to one unit.
+class OfferNode:  # pylint: disable=too-few-public-methods
+    """Uses an LLM to generate an approval-ready simulated procurement offer."""
 
-    Args:
-        message: Normalized procurement request.
+    def __init__(self, llm_service: ProcurementLlmService) -> None:
+        """Store the LLM service used during graph execution.
 
-    Returns:
-        A positive requested quantity capped at 99 for this demonstration.
-    """
-    match = re.search(r"\b(\d{1,2})\b", message)
-    return int(match.group(1)) if match and int(match.group(1)) > 0 else 1
+        Args:
+            llm_service: OCI Responses API service.
+        """
+        self._llm_service = llm_service
 
+    def __call__(self, state: ProcurementState) -> dict[str, str]:
+        """Generate an offer from the already extracted structured request.
 
-def matching_products(message: str) -> list[dict[str, str | int]]:
-    """Find deterministic catalogue products matching the request words.
+        Args:
+            state: Current graph state containing extracted request fields.
 
-    Args:
-        message: Normalized user request.
-
-    Returns:
-        Catalogue products whose keywords occur in the request.
-    """
-    request_words = set(re.findall(r"[a-z0-9-]+", message.lower()))
-    return [
-        {key: value for key, value in product.items() if key != "keywords"}
-        for product in CATALOGUE
-        if request_words.intersection(product["keywords"].split())
-    ]
-
-
-def intake_request(state: ProcurementState) -> dict[str, str | int]:
-    """Normalize a procurement request and derive its requested quantity.
-
-    Args:
-        state: Current durable workflow state.
-
-    Returns:
-        The normalized request, quantity, and next lifecycle status.
-
-    Raises:
-        ValueError: If the request is blank after normalization.
-    """
-    normalized_message = state["message"].strip()
-    if not normalized_message:
-        raise ValueError("The procurement request must not be blank.")
-    return {
-        "normalized_message": normalized_message,
-        "quantity": requested_quantity(normalized_message),
-        "status": "searching_catalogue",
-    }
-
-
-def create_order_proposal(state: ProcurementState) -> dict[str, Any]:
-    """Search the catalogue and create a deterministic simulated order proposal.
-
-    Args:
-        state: Current state after request intake.
-
-    Returns:
-        Matching products, a user-reviewable proposal, and an approval status.
-    """
-    products = matching_products(state["normalized_message"])
-    quantity = state["quantity"]
-    if not products:
-        draft = (
-            "No catalogue products matched this request. Update the request with "
-            "a supported IT product, such as mouse, keyboard, phone, or battery."
+        Returns:
+            A simulated offer and the approval-required lifecycle status.
+        """
+        request = ProcurementRequest(
+            requested_object=state["requested_object"], quantity=state["quantity"]
         )
-    else:
-        lines = [
-            f"{quantity} × {product['name']} ({product['sku']}) — "
-            f"EUR {int(product['unit_price_eur']) * quantity}"
-            for product in products
-        ]
-        total = sum(int(product["unit_price_eur"]) * quantity for product in products)
-        draft = (
-            "Simulated purchase order:\n" + "\n".join(lines) + f"\nTotal: EUR {total}"
-        )
-    return {"products": products, "draft": draft, "status": "awaiting_approval"}
+        return {
+            "draft": self._llm_service.generate_offer(request),
+            "status": "awaiting_approval",
+        }
 
 
 def approve_order(state: ProcurementState) -> dict[str, str]:
     """Pause for a human decision and record the simulated order outcome.
 
     Args:
-        state: Current state containing the proposed order.
+        state: Current state containing the generated offer.
 
     Returns:
         The approval decision and final procurement lifecycle status.
@@ -150,7 +107,8 @@ def approve_order(state: ProcurementState) -> dict[str, str]:
             "kind": "approval_request",
             "question": "Approve this simulated IT purchase order?",
             "draft": state["draft"],
-            "products": state["products"],
+            "requested_object": state["requested_object"],
+            "quantity": state["quantity"],
             "allowed_decisions": ["approve", "reject"],
         }
     )
@@ -162,21 +120,25 @@ def approve_order(state: ProcurementState) -> dict[str, str]:
     }
 
 
-def build_procurement_graph(checkpointer: Any) -> Any:
-    """Build the checkpointed IT procurement workflow.
+def build_procurement_graph(
+    checkpointer: Any, llm_service: ProcurementLlmService | None = None
+) -> Any:
+    """Build the checkpointed LLM-assisted procurement workflow.
 
     Args:
         checkpointer: LangGraph-compatible checkpoint saver.
+        llm_service: Optional injectable OCI service for tests.
 
     Returns:
-        A compiled deterministic procurement graph.
+        A compiled procurement graph.
     """
+    service = llm_service or ProcurementLlmService()
     graph = StateGraph(ProcurementState)
-    graph.add_node("intake", intake_request)
-    graph.add_node("catalogue_search", create_order_proposal)
+    graph.add_node("intake", IntakeNode(service))
+    graph.add_node("offer_generation", OfferNode(service))
     graph.add_node("order_approval", approve_order)
     graph.add_edge(START, "intake")
-    graph.add_edge("intake", "catalogue_search")
-    graph.add_edge("catalogue_search", "order_approval")
+    graph.add_edge("intake", "offer_generation")
+    graph.add_edge("offer_generation", "order_approval")
     graph.add_edge("order_approval", END)
     return graph.compile(checkpointer=checkpointer)

@@ -34,7 +34,7 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 **What you observe**
 
 The request field is prefilled with `Order 2 wireless mice`. The browser holds
-only the Example 04 API URL, never ADB configuration.
+only the Example 04 API URL, never ADB or OCI API-key configuration.
 
 ## 3. Search and pause for approval
 
@@ -44,9 +44,9 @@ Select **Search catalogue**.
 
 **What you observe**
 
-The event timeline receives the intake and catalogue-search updates. A new
-`example04-...` ID appears, followed by a simulated order for two wireless
-mice totaling EUR 58. The workflow pauses at **Awaiting approval**.
+The event timeline receives the request-extraction and offer-generation updates.
+A new `example04-...` ID appears, followed by an LLM-generated simulated offer.
+The workflow pauses at **Awaiting approval**.
 
 ## 4. Reload the durable state
 
@@ -78,5 +78,5 @@ event. This is sequential idempotency, not multi-writer decision arbitration.
 | --- | --- |
 | Cannot reach procurement service | Confirm Example 04 is running and `NEXT_PUBLIC_EXAMPLE04_API_URL` is `http://127.0.0.1:8082`. |
 | CORS error | Set `NEXTJS_UI_ORIGIN` to the exact Next.js browser origin and restart Example 04. |
-| No match proposal | Use a supported product: mouse, keyboard, phone, battery, `tastiera`, `cellulare`, or `batterie`. |
+| LLM execution error | Verify `GENAI_API_KEY`, `REGION`, and `OCI_MODEL_ID` in the root `.env`, then restart Example 04. |
 | `Run not found.` | Use the complete ID and confirm the API connects to the same ADB schema. |
