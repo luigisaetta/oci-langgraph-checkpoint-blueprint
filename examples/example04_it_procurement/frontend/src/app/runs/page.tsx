@@ -35,6 +35,7 @@ export default function ProcessInstancesPage() {
   const [runs, setRuns] = useState<RunSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedThreadId, setCopiedThreadId] = useState<string | null>(null);
 
   async function loadRuns(): Promise<void> {
     setIsLoading(true);
@@ -51,6 +52,15 @@ export default function ProcessInstancesPage() {
   useEffect(() => {
     void loadRuns();
   }, []);
+
+  async function copyProcessId(threadId: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(threadId);
+      setCopiedThreadId(threadId);
+    } catch {
+      setError("The process ID could not be copied. Select and copy it manually.");
+    }
+  }
 
   return (
     <main>
@@ -92,7 +102,20 @@ export default function ProcessInstancesPage() {
               <tbody>
                 {runs.map((run) => (
                   <tr key={run.thread_id}>
-                    <td><code>{run.thread_id}</code></td>
+                    <td>
+                      <div className="process-id-cell">
+                        <Link href={`/runs/${encodeURIComponent(run.thread_id)}`}>
+                          <code>{run.thread_id}</code>
+                        </Link>
+                        <button
+                          type="button"
+                          className="copy-button"
+                          onClick={() => void copyProcessId(run.thread_id)}
+                        >
+                          {copiedThreadId === run.thread_id ? "Copied" : "Copy ID"}
+                        </button>
+                      </div>
+                    </td>
                     <td>{submittedAtLabel(run.submitted_at)}</td>
                     <td><span className={`instance-status ${run.status}`}>{statusLabel(run.status)}</span></td>
                   </tr>

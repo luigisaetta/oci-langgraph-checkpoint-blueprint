@@ -50,6 +50,11 @@ and **Completed** for workflows that were approved or rejected. The newest
 submissions appear first. Select **Refresh** to retrieve the latest list from
 `GET /runs`.
 
+Select a Process ID to open its detail view. It displays the original request,
+the extracted item and quantity, simulated offer, lifecycle status, and any
+approval decision reconstructed through `GET /runs/{thread_id}`. Select
+**Copy ID** to copy the process ID to the browser clipboard.
+
 ## 4. Search and pause for approval
 
 **What you do**

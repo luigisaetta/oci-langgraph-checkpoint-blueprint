@@ -89,6 +89,11 @@ or **Completed**. Instances are ordered from most recently submitted to oldest.
 The browser obtains this information only from the backend, which reads the
 latest checkpoint for each Example 04 thread.
 
+Select a Process ID to open `/runs/{thread_id}`. The detail view reconstructs
+the original request, extracted item and quantity, simulated offer, lifecycle
+status, and approval decision through the existing `GET /runs/{thread_id}` API.
+Each row also has a browser-only **Copy ID** action.
+
 ## API and idempotency
 
 | Endpoint | Purpose |

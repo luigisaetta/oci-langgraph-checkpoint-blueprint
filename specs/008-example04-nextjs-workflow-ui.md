@@ -59,6 +59,10 @@ payment flow, inventory reservation, or real purchase is in scope.
 11. The UI provides a `/runs` page that shows the process ID and current
     status and submission date/time for every listed durable procurement
     instance, ordered most recent first.
+12. Each process ID on `/runs` links to `/runs/{thread_id}`, which displays the
+    persisted request, extracted item and quantity, offer, lifecycle status,
+    and approval decision using `GET /runs/{thread_id}`. The list also provides
+    a browser-only copy action for each process ID.
 
 ## Quality and Documentation
 
@@ -87,6 +91,8 @@ payment flow, inventory reservation, or real purchase is in scope.
 * The process-instances page shows each persisted `example04-` process ID and
   whether it is in progress or completed, along with its submission date/time,
   in descending submission-time order.
+* Selecting a listed process opens its persisted detail view, and its Process
+  ID can be copied without exposing any database configuration to the browser.
 * No real ordering, credentials, supplier integration, or database access is
   present in the browser code.
 

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+* Example 04 process instances now link to a durable detail view, and each Process ID has a browser-only copy action.
 * Example 04 now provides a process-instances page and `GET /runs` endpoint to list durable procurement IDs, submission date/time, and in-progress or completed status, newest first.
 * Example 04 is now an independent, durable IT procurement agent with an LLM-generated simulated offer and approval workflow, plus its own pooled FastAPI API on port 8082.
 * Example 04 now uses OCI Generative AI Responses API calls to extract a strict structured procurement request and generate its simulated offer.
