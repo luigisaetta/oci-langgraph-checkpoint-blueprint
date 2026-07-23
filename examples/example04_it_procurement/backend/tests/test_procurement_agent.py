@@ -132,6 +132,7 @@ def test_status_reader_and_streamer_use_the_example04_graph(
 
         values = {
             "status": "awaiting_approval",
+            "message": "Order 2 wireless mice",
             "draft": "Offer",
             "requested_object": "mouse",
             "quantity": 2,
@@ -159,6 +160,7 @@ def test_status_reader_and_streamer_use_the_example04_graph(
 
     assert run_status is not None
     assert run_status.approval_required is True
+    assert run_status.message == "Order 2 wireless mice"
     assert run_status.requested_object == "mouse"
     assert events[0].startswith("event: run_completed")
 
@@ -170,6 +172,7 @@ def test_api_resumes_once_and_acknowledges_repeated_decision() -> None:
         "paused": RunStatus(
             thread_id="paused",
             status="awaiting_approval",
+            message="Order 2 wireless mice",
             draft="Offer",
             requested_object="mouse",
             quantity=2,
@@ -178,6 +181,7 @@ def test_api_resumes_once_and_acknowledges_repeated_decision() -> None:
         "ordered": RunStatus(
             thread_id="ordered",
             status="ordered",
+            message="Order 2 wireless mice",
             draft="Offer",
             requested_object="mouse",
             quantity=2,

@@ -36,8 +36,10 @@ payment flow, inventory reservation, or real purchase is in scope.
    claims of real supplier access, inventory reservation, or order creation.
 4. Approval uses the existing `approve` and `reject` decisions. Approval
    records the simulated order as `ordered`; rejection records `rejected`.
-5. `GET /runs/{thread_id}` returns the persisted procurement status, proposal,
-   extracted object, quantity, decision, and whether approval is required.
+5. `GET /runs/{thread_id}` returns the persisted original user request,
+   procurement status, proposal, extracted object, quantity, decision, and
+   whether approval is required. On a successful browser state load, the UI
+   must repopulate the request input with that original request.
 6. `POST /runs/{thread_id}/decision` retains Example 03's sequential
    idempotency behaviour for a repeated final decision. It must not execute the
    graph again for that request.

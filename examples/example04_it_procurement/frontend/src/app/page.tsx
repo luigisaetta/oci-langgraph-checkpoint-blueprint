@@ -114,6 +114,7 @@ export default function HomePage() {
       if (state && typeof state === "object") {
         const values = state as Record<string, unknown>;
         const status = asText(values.status);
+        const completedMessage = asText(values.message);
         const finalDraft = asText(values.draft);
         const approvalDecision = asText(values.approval_decision);
         const finalThreadId = eventThreadId ?? threadId;
@@ -121,6 +122,7 @@ export default function HomePage() {
           setRunStatus({
             thread_id: finalThreadId,
             status,
+            message: completedMessage,
             draft: finalDraft,
             requested_object: null,
             quantity: null,
@@ -177,6 +179,9 @@ export default function HomePage() {
       const loadedStatus = await getRunStatus(API_URL, requestedThreadId);
       setThreadId(loadedStatus.thread_id);
       setRunStatus(loadedStatus);
+      if (loadedStatus.message) {
+        setMessage(loadedStatus.message);
+      }
       setDraft(loadedStatus.draft);
       setStage(stageFromStatus(loadedStatus));
       setEvents([

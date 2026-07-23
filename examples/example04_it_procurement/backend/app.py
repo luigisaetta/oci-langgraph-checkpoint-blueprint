@@ -69,6 +69,7 @@ class RunStatus(BaseModel):
 
     thread_id: str
     status: str
+    message: str | None = None
     draft: str | None = None
     requested_object: str | None = None
     quantity: int | None = None
@@ -103,6 +104,7 @@ def read_run_status(pool: Any, thread_id: str) -> RunStatus | None:
     return RunStatus(
         thread_id=thread_id,
         status=current_status,
+        message=state_values.get("message"),
         draft=state_values.get("draft"),
         requested_object=state_values.get("requested_object"),
         quantity=state_values.get("quantity"),

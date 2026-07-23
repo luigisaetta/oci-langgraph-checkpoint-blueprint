@@ -8,6 +8,7 @@ describe("getRunStatus", () => {
       Response.json({
         thread_id: "example04-1",
         status: "awaiting_approval",
+        message: "Order 2 wireless mice",
         draft: "Draft",
         requested_object: "wireless mouse",
         quantity: 2,

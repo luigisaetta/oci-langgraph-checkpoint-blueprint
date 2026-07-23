@@ -5,6 +5,7 @@ export type Decision = "approve" | "reject";
 export interface RunStatus {
   thread_id: string;
   status: string;
+  message: string | null;
   draft: string | null;
   requested_object: string | null;
   quantity: number | null;
@@ -34,6 +35,7 @@ export function isRunStatus(value: unknown): value is RunStatus {
   return (
     typeof candidate.thread_id === "string" &&
     typeof candidate.status === "string" &&
+    (typeof candidate.message === "string" || candidate.message === null) &&
     (typeof candidate.draft === "string" || candidate.draft === null) &&
     (typeof candidate.requested_object === "string" ||
       candidate.requested_object === null) &&

@@ -80,7 +80,8 @@ npm run dev
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000), submit an IT request,
 and approve or reject the proposal. To prove durable recovery, refresh the
 page, paste the displayed `example04-...` thread ID, and select **Load state**.
-The detailed walkthrough is in the [UI Operational Runbook](UI_OPERATIONAL_RUNBOOK.md).
+The original request is restored into the request field along with the durable
+status. The detailed walkthrough is in the [UI Operational Runbook](UI_OPERATIONAL_RUNBOOK.md).
 
 ## API and idempotency
 
