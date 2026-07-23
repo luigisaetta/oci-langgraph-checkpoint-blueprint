@@ -36,7 +36,21 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 The request field is prefilled with `Order 2 wireless mice`. The browser holds
 only the Example 04 API URL, never ADB or OCI API-key configuration.
 
-## 3. Search and pause for approval
+## 3. View process instances
+
+**What you do**
+
+Select **Process instances** in the navigation.
+
+**What you observe**
+
+The page lists every persisted `example04-...` process ID, its submission
+date/time, and a current status: **In progress** for non-terminal workflows
+and **Completed** for workflows that were approved or rejected. The newest
+submissions appear first. Select **Refresh** to retrieve the latest list from
+`GET /runs`.
+
+## 4. Search and pause for approval
 
 **What you do**
 
@@ -48,7 +62,7 @@ The event timeline receives the request-extraction and offer-generation updates.
 A new `example04-...` ID appears, followed by an LLM-generated simulated offer.
 The workflow pauses at **Awaiting approval**.
 
-## 4. Reload the durable state
+## 5. Reload the durable state
 
 **What you do**
 
@@ -60,7 +74,7 @@ and select **Load state**.
 The proposal and approval state return from `GET /runs/{thread_id}` and Oracle
 ADB checkpoints. They do not come from browser memory.
 
-## 5. Complete the simulated order
+## 6. Complete the simulated order
 
 **What you do**
 

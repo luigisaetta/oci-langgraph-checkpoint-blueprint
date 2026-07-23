@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
 
 import {
   getRunStatus,
@@ -220,6 +221,10 @@ export default function HomePage() {
   return (
     <main>
       <section className="hero">
+        <nav className="page-nav" aria-label="Primary navigation">
+          <Link href="/">New request</Link>
+          <Link href="/runs">Process instances</Link>
+        </nav>
         <p className="eyebrow">Example 04 · IT procurement agent</p>
         <h1>IT procurement, made durable.</h1>
         <p className="hero-copy">

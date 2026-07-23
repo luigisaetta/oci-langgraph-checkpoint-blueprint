@@ -51,6 +51,14 @@ payment flow, inventory reservation, or real purchase is in scope.
    OCI endpoint as `https://inference.generativeai.<region>.oci.oraclecloud.com/openai/v1`.
 9. The browser uses only the Example 04 API URL from
    `NEXT_PUBLIC_EXAMPLE04_API_URL`, defaulting to `http://127.0.0.1:8082`.
+10. `GET /runs` lists the latest checkpoint for every `example04-` thread. It
+    returns each process ID, its ISO-8601 submission timestamp, and a
+    UI-oriented status of `in_progress` or `completed`; `ordered` and
+    `rejected` are completed states. Results are ordered from most recent to
+    oldest submission.
+11. The UI provides a `/runs` page that shows the process ID and current
+    status and submission date/time for every listed durable procurement
+    instance, ordered most recent first.
 
 ## Quality and Documentation
 
@@ -76,6 +84,9 @@ payment flow, inventory reservation, or real purchase is in scope.
 * A browser refresh followed by loading a known `example04-` thread reconstructs
   its state through the Example 04 API.
 * Approval records an `ordered` terminal status; rejection records `rejected`.
+* The process-instances page shows each persisted `example04-` process ID and
+  whether it is in progress or completed, along with its submission date/time,
+  in descending submission-time order.
 * No real ordering, credentials, supplier integration, or database access is
   present in the browser code.
 

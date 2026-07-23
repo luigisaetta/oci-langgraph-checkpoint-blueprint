@@ -2,10 +2,11 @@ import { consumeSseResponse } from "./sse";
 import type {
   Decision,
   FetchImplementation,
+  RunSummary,
   RunStatus,
   WorkflowEvent,
 } from "./types";
-import { isRunStatus } from "./types";
+import { isRunStatus, isRunSummaryList } from "./types";
 
 /** Represents a safe, user-displayable Example 04 API failure. */
 export class WorkflowApiError extends Error {
@@ -57,6 +58,20 @@ export async function getRunStatus(
   const payload: unknown = await response.json();
   if (!isRunStatus(payload)) {
     throw new WorkflowApiError("The workflow service returned an invalid status.");
+  }
+  return payload;
+}
+
+/** Retrieve the durable procurement instances known to the Example 04 API. */
+export async function getRunSummaries(
+  apiUrl: string,
+  fetcher: FetchImplementation = fetch,
+): Promise<RunSummary[]> {
+  const response = await fetcher(endpoint(apiUrl, "/runs"));
+  await requireSuccessfulResponse(response);
+  const payload: unknown = await response.json();
+  if (!isRunSummaryList(payload)) {
+    throw new WorkflowApiError("The workflow service returned an invalid run list.");
   }
   return payload;
 }

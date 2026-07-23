@@ -17,6 +17,7 @@ from examples.example02_hitl_sse.streaming import format_sse
 from examples.example04_it_procurement.backend.app import (
     RunStatus,
     generate_thread_id,
+    read_run_summaries,
     read_run_status,
     stream_run,
 )
@@ -165,6 +166,70 @@ def test_status_reader_and_streamer_use_the_example04_graph(
     assert events[0].startswith("event: run_completed")
 
 
+def test_run_summary_reader_lists_only_latest_example04_instances(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The instance list ignores other examples and maps terminal runs correctly."""
+    application_module = importlib.import_module(
+        "examples.example04_it_procurement.backend.app"
+    )
+    checkpoint_tuples = [
+        SimpleNamespace(
+            config={"configurable": {"thread_id": "example04-completed"}},
+            checkpoint={
+                "ts": "2026-07-23T12:00:00+00:00",
+                "channel_values": {"status": "ordered"},
+            },
+        ),
+        SimpleNamespace(
+            config={"configurable": {"thread_id": "example04-active"}},
+            checkpoint={
+                "ts": "2026-07-23T11:00:00+00:00",
+                "channel_values": {"status": "awaiting_approval"},
+            },
+        ),
+        SimpleNamespace(
+            config={"configurable": {"thread_id": "example04-active"}},
+            checkpoint={
+                "ts": "2026-07-23T10:00:00+00:00",
+                "channel_values": {"status": "ordered"},
+            },
+        ),
+        SimpleNamespace(
+            config={"configurable": {"thread_id": "example03-other"}},
+            checkpoint={
+                "ts": "2026-07-23T13:00:00+00:00",
+                "channel_values": {"status": "ordered"},
+            },
+        ),
+    ]
+
+    class FakeSaver:  # pylint: disable=too-few-public-methods
+        """Returns checkpoint tuples in newest-first order."""
+
+        def __init__(self, _pool: Any) -> None:
+            """Accept the pool passed by the application boundary."""
+
+        def list(self, _config: None) -> Iterator[Any]:
+            """Return fake durable checkpoints."""
+            return iter(checkpoint_tuples)
+
+    monkeypatch.setattr(application_module, "OracleSaver", FakeSaver)
+
+    assert [summary.model_dump() for summary in read_run_summaries(object())] == [
+        {
+            "thread_id": "example04-completed",
+            "status": "completed",
+            "submitted_at": "2026-07-23T12:00:00+00:00",
+        },
+        {
+            "thread_id": "example04-active",
+            "status": "in_progress",
+            "submitted_at": "2026-07-23T10:00:00+00:00",
+        },
+    ]
+
+
 def test_api_resumes_once_and_acknowledges_repeated_decision() -> None:
     """A repeated final decision returns completion without graph execution."""
     streamer_calls: list[str] = []
@@ -241,3 +306,41 @@ def test_api_reports_missing_run_and_start_uses_example04_prefix() -> None:
 
     assert response.status_code == 200
     assert generate_thread_id().startswith("example04-")
+
+
+def test_api_lists_process_instances() -> None:
+    """The list endpoint exposes only the UI-oriented instance fields."""
+    application = importlib.import_module(
+        "examples.example04_it_procurement.backend.app"
+    ).create_app(
+        initialize_database=False,
+        run_list_reader=lambda _pool: [
+            {
+                "thread_id": "example04-active",
+                "status": "in_progress",
+                "submitted_at": "2026-07-23T12:00:00+00:00",
+            },
+            {
+                "thread_id": "example04-completed",
+                "status": "completed",
+                "submitted_at": "2026-07-23T10:00:00+00:00",
+            },
+        ],
+    )
+    application.state.adb_pool = object()
+    with TestClient(application) as client:
+        response = client.get("/runs")
+
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "thread_id": "example04-active",
+            "status": "in_progress",
+            "submitted_at": "2026-07-23T12:00:00+00:00",
+        },
+        {
+            "thread_id": "example04-completed",
+            "status": "completed",
+            "submitted_at": "2026-07-23T10:00:00+00:00",
+        },
+    ]

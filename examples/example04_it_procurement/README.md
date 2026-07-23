@@ -83,12 +83,19 @@ page, paste the displayed `example04-...` thread ID, and select **Load state**.
 The original request is restored into the request field along with the durable
 status. The detailed walkthrough is in the [UI Operational Runbook](UI_OPERATIONAL_RUNBOOK.md).
 
+The **Process instances** page (`/runs`) lists the persisted `example04-`
+process IDs, submission date/time, and whether each workflow is **In progress**
+or **Completed**. Instances are ordered from most recently submitted to oldest.
+The browser obtains this information only from the backend, which reads the
+latest checkpoint for each Example 04 thread.
+
 ## API and idempotency
 
 | Endpoint | Purpose |
 | --- | --- |
 | `GET /health/ready` | Validates an acquired ADB pool connection. |
 | `POST /runs` | Starts and streams a procurement workflow. |
+| `GET /runs` | Lists process IDs, submission timestamps, and current UI status, newest first. |
 | `GET /runs/{thread_id}` | Reconstructs durable procurement state from ADB. |
 | `POST /runs/{thread_id}/decision` | Approves or rejects the persisted proposal. |
 

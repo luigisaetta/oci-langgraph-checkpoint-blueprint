@@ -13,6 +13,12 @@ export interface RunStatus {
   approval_required: boolean;
 }
 
+export interface RunSummary {
+  thread_id: string;
+  status: "in_progress" | "completed";
+  submitted_at: string;
+}
+
 export type WorkflowEventName =
   | "run_started"
   | "node_update"
@@ -45,4 +51,18 @@ export function isRunStatus(value: unknown): value is RunStatus {
       candidate.approval_decision === null) &&
     typeof candidate.approval_required === "boolean"
   );
+}
+
+export function isRunSummaryList(value: unknown): value is RunSummary[] {
+  return Array.isArray(value) && value.every((candidate) => {
+    if (!candidate || typeof candidate !== "object") {
+      return false;
+    }
+    const summary = candidate as Record<string, unknown>;
+    return (
+      typeof summary.thread_id === "string" &&
+      (summary.status === "in_progress" || summary.status === "completed") &&
+      typeof summary.submitted_at === "string"
+    );
+  });
 }

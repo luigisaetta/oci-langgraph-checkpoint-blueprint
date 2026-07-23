@@ -47,6 +47,10 @@ input {
 
 main { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 5.5rem 0 3rem; }
 .hero { max-width: 760px; margin-bottom: 2.6rem; }
+.compact-hero { margin-bottom: 1.8rem; }
+.page-nav { display: flex; gap: 1rem; margin-bottom: 2rem; }
+.page-nav a { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+.page-nav a:hover, .page-nav a[aria-current="page"] { color: var(--cyan); }
 .eyebrow, .section-label { margin: 0 0 0.5rem; color: var(--cyan); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; }
 h1, h2, p { margin-top: 0; }
 h1 { margin-bottom: 1rem; font-size: clamp(2.7rem, 6vw, 5.2rem); line-height: 0.96; letter-spacing: -0.06em; }
@@ -82,6 +86,14 @@ h2 { margin-bottom: 0.65rem; font-size: 1.35rem; }
 .thread-id span, dt { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
 code { overflow-wrap: anywhere; color: var(--cyan); }
 .status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1.25rem 0 0; }
+.instance-panel { max-width: 900px; }
+.instance-table-wrap { overflow-x: auto; margin-top: 1.25rem; }
+.instance-table { width: 100%; border-collapse: collapse; text-align: left; }
+.instance-table th, .instance-table td { padding: 0.9rem; border-bottom: 1px solid var(--line); }
+.instance-table th { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.instance-status { display: inline-block; border-radius: 999px; padding: 0.3rem 0.6rem; font-size: 0.82rem; font-weight: 700; }
+.instance-status.in_progress { color: #03111f; background: var(--cyan); }
+.instance-status.completed { color: #c4f7dc; background: rgba(96, 214, 168, 0.16); border: 1px solid var(--green); }
 .status-grid div { padding: 0.75rem; border: 1px solid var(--line); border-radius: 10px; }
 dd { margin: 0.35rem 0 0; font-weight: 700; }
 .event-list { display: grid; gap: 0.85rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }

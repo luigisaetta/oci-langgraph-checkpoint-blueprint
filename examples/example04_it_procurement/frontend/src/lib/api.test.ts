@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { getRunStatus, startRun, WorkflowApiError } from "./api";
+import { getRunStatus, getRunSummaries, startRun, WorkflowApiError } from "./api";
 
 describe("getRunStatus", () => {
   it("returns a validated persisted run status", async () => {
@@ -49,5 +49,37 @@ describe("startRun", () => {
       body: JSON.stringify({ message: "Prepare report" }),
     });
     expect(eventNames).toEqual(["run_started"]);
+  });
+});
+
+describe("getRunSummaries", () => {
+  it("returns validated process-instance summaries", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      Response.json([
+        {
+          thread_id: "example04-1",
+          status: "in_progress",
+          submitted_at: "2026-07-23T12:00:00+00:00",
+        },
+        {
+          thread_id: "example04-2",
+          status: "completed",
+          submitted_at: "2026-07-23T10:00:00+00:00",
+        },
+      ]),
+    );
+
+    await expect(getRunSummaries("http://api.example", fetcher)).resolves.toEqual([
+      {
+        thread_id: "example04-1",
+        status: "in_progress",
+        submitted_at: "2026-07-23T12:00:00+00:00",
+      },
+      {
+        thread_id: "example04-2",
+        status: "completed",
+        submitted_at: "2026-07-23T10:00:00+00:00",
+      },
+    ]);
   });
 });

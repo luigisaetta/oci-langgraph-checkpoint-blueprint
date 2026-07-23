@@ -32,6 +32,7 @@ from examples.example04_it_procurement.backend.procurement_graph import (
 EXAMPLE_THREAD_ID_PREFIX = "example04-"
 SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 RunStreamer = Callable[[Any, str, Any, bool], Iterator[str]]
+RunListReader = Callable[[Any], list["RunSummary"]]
 
 
 class StartRunRequest(BaseModel):
@@ -77,6 +78,26 @@ class RunStatus(BaseModel):
     approval_required: bool
 
 
+class RunSummary(BaseModel):
+    """Represents one durable procurement run in the instance list."""
+
+    thread_id: str
+    status: Literal["in_progress", "completed"]
+    submitted_at: str
+
+
+def is_completed_status(procurement_status: str) -> bool:
+    """Return whether a procurement lifecycle status is terminal.
+
+    Args:
+        procurement_status: Persisted internal procurement lifecycle status.
+
+    Returns:
+        ``True`` for an ordered or rejected simulated order.
+    """
+    return procurement_status in {"ordered", "rejected"}
+
+
 def generate_thread_id() -> str:
     """Generate a durable thread identifier for an Example 04 procurement run.
 
@@ -113,6 +134,65 @@ def read_run_status(pool: Any, thread_id: str) -> RunStatus | None:
     )
 
 
+def read_run_summaries(pool: Any) -> list[RunSummary]:
+    """List the latest visible state of every Example 04 procurement run.
+
+    Checkpoints are returned newest first by ``OracleSaver``. The first status
+    encountered for a thread is therefore its current status. The oldest
+    checkpoint timestamp is retained as its submission time.
+
+    Args:
+        pool: Oracle connection pool owned by the application.
+
+    Returns:
+        Procurement instances ordered by submission time, newest first.
+    """
+    saver = OracleSaver(pool)
+    run_data: dict[str, dict[str, str]] = {}
+    for checkpoint_tuple in saver.list(None):
+        configurable = checkpoint_tuple.config.get("configurable", {})
+        thread_id = configurable.get("thread_id")
+        if not isinstance(thread_id, str) or not thread_id.startswith(
+            EXAMPLE_THREAD_ID_PREFIX
+        ):
+            continue
+        checkpoint = checkpoint_tuple.checkpoint
+        checkpoint_timestamp = checkpoint.get("ts")
+        if not isinstance(checkpoint_timestamp, str):
+            continue
+        current_run = run_data.setdefault(
+            thread_id, {"submitted_at": checkpoint_timestamp}
+        )
+        if checkpoint_timestamp < current_run["submitted_at"]:
+            current_run["submitted_at"] = checkpoint_timestamp
+        if "current_status" in current_run:
+            continue
+        channel_values = checkpoint.get("channel_values", {})
+        persisted_status = channel_values.get("status")
+        if not isinstance(persisted_status, str):
+            continue
+        current_run["current_status"] = persisted_status
+
+    summaries = [
+        RunSummary(
+            thread_id=thread_id,
+            status=(
+                "completed"
+                if is_completed_status(run["current_status"])
+                else "in_progress"
+            ),
+            submitted_at=run["submitted_at"],
+        )
+        for thread_id, run in run_data.items()
+        if "current_status" in run
+    ]
+    return sorted(
+        summaries,
+        key=lambda summary: summary.submitted_at,
+        reverse=True,
+    )
+
+
 def stream_run(
     pool: Any, thread_id: str, graph_input: Any, is_resume: bool
 ) -> Iterator[str]:
@@ -146,6 +226,7 @@ def stream_run(
 def create_app(
     streamer: RunStreamer = stream_run,
     status_reader: Callable[[Any, str], RunStatus | None] = read_run_status,
+    run_list_reader: RunListReader = read_run_summaries,
     initialize_database: bool = True,
     ui_origin: str | None = None,
 ) -> FastAPI:
@@ -154,6 +235,7 @@ def create_app(
     Args:
         streamer: Graph execution function, injectable for tests.
         status_reader: Persisted-state reader, injectable for tests.
+        run_list_reader: Persisted-instance list reader, injectable for tests.
         initialize_database: Whether to create the ADB pool and schema.
         ui_origin: Explicit permitted Next.js browser origin.
 
@@ -242,6 +324,11 @@ def create_app(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Run not found."
             )
         return run_status
+
+    @application.get("/runs", response_model=list[RunSummary])
+    def list_runs(request: Request) -> list[RunSummary]:
+        """Return all Example 04 procurement instances and their UI state."""
+        return run_list_reader(get_pool(request))
 
     @application.post("/runs/{thread_id}/decision")
     def submit_decision(
