@@ -7,7 +7,7 @@ import type {
 } from "./types";
 import { isRunStatus } from "./types";
 
-/** Represents a safe, user-displayable Example 03 API failure. */
+/** Represents a safe, user-displayable Example 04 API failure. */
 export class WorkflowApiError extends Error {
   constructor(
     message: string,
@@ -44,7 +44,7 @@ async function requireSuccessfulResponse(response: Response): Promise<void> {
   }
 }
 
-/** Retrieve the persisted state of one durable Example 03 run. */
+/** Retrieve the persisted state of one durable Example 04 procurement run. */
 export async function getRunStatus(
   apiUrl: string,
   threadId: string,
@@ -77,7 +77,7 @@ async function streamWorkflow(
     });
   } catch {
     throw new WorkflowApiError(
-      "Cannot reach the workflow service. Confirm that Example 03 is running.",
+      "Cannot reach the procurement service. Confirm that Example 04 is running.",
     );
   }
   await requireSuccessfulResponse(response);

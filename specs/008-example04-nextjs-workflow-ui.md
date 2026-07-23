@@ -1,4 +1,4 @@
-# Specification: Example 04 — Next.js Durable Workflow UI
+# Specification: Example 04 — IT Procurement Agent and UI
 
 ## Status
 
@@ -6,58 +6,71 @@ Accepted
 
 ## Context
 
-Example 03 proves that a pooled FastAPI service can persist, inspect, and resume a Human-in-the-Loop LangGraph workflow through Oracle ADB. A browser interface should make the same durable workflow visible to developers and stakeholders without moving Oracle or LangGraph concerns into the client.
+Example 04 currently demonstrates a Next.js UI over the generic Example 03
+workflow API. It must become an independent, concrete durable-workflow example:
+an IT procurement agent that searches a deterministic product catalogue and
+prepares a simulated purchase order for human approval.
 
 ## Scope
 
-Create `examples/example04_nextjs_ui/` as a standalone Next.js application that communicates only with the Example 03 HTTP and SSE API. It must let a user start a deterministic workflow, follow streamed progress, inspect persisted status, submit an approval decision, and reload an existing thread.
+Example 04 must contain its own FastAPI/LangGraph agent, based on the durable
+pooling and recovery pattern of Example 03, plus its existing Next.js UI. The
+agent must accept a natural-language request for IT products (for example,
+mouse, keyboard, phone, or battery), find matching catalogue products, create
+a deterministic order proposal, pause for approval, and persist the workflow
+in Oracle ADB.
 
-The UI is a demonstration client. Oracle ADB access, `OracleSaver`, graph creation, checkpoint schema setup, and LangGraph resume execution remain exclusively in Example 03.
+The catalogue and order creation are demonstrations only. No supplier API,
+payment flow, inventory reservation, or real purchase is in scope.
 
-## API Boundary
+## Behaviour
 
-1. The UI must read the Example 03 base URL from the public `NEXT_PUBLIC_EXAMPLE03_API_URL` environment variable, defaulting to `http://127.0.0.1:8081` for local development.
-2. It must call only these endpoints:
-   * `POST /runs` to start a run and consume its SSE response.
-   * `GET /runs/{thread_id}` to retrieve persisted status.
-   * `POST /runs/{thread_id}/decision` to submit `approve` or `reject` and consume its SSE response.
-3. The UI must not import `oracledb`, `langgraph`, `langgraph_oracledb`, or Python modules; it must not contain ADB credentials or database connection configuration.
-4. Example 03 must allow the configured local Next.js development origin through explicit CORS configuration. It must not use an unrestricted `*` origin when credentials are enabled.
+1. `POST /runs` creates an `example04-` thread and streams the procurement
+   workflow: intake, catalogue search, order proposal, and approval request.
+2. The catalogue is in-memory, deterministic, and contains representative IT
+   products including mice, keyboards, mobile phones, and batteries.
+3. The agent extracts a positive requested quantity when one is present;
+   otherwise it proposes one unit. It returns a clear no-match proposal when
+   no catalogue product matches.
+4. Approval uses the existing `approve` and `reject` decisions. Approval
+   records the simulated order as `ordered`; rejection records `rejected`.
+5. `GET /runs/{thread_id}` returns the persisted procurement status, proposal,
+   selected products, decision, and whether approval is required.
+6. `POST /runs/{thread_id}/decision` retains Example 03's sequential
+   idempotency behaviour for a repeated final decision. It must not execute the
+   graph again for that request.
+7. The FastAPI service owns one Oracle pool for its lifespan and calls
+   `OracleSaver.setup()` at startup. It uses `EXAMPLE04_SERVER_PORT`, default
+   `8082`, and the shared safe ADB and pool configuration.
+8. The browser uses only the Example 04 API URL from
+   `NEXT_PUBLIC_EXAMPLE04_API_URL`, defaulting to `http://127.0.0.1:8082`.
 
-## User Experience
+## Quality and Documentation
 
-1. The landing view must explain the durable-workflow demonstration and show a form for an initial message.
-2. Starting a run must display the generated thread ID and a chronological event timeline from the SSE stream.
-3. A visible workflow timeline must represent the lifecycle: `Started`, `Intake`, `Draft`, `Awaiting approval`, and `Completed`.
-4. On an `approval_required` event, the UI must show the persisted draft and `Approve` and `Reject` controls.
-5. A user must be able to paste a thread ID and load its persisted status. A page reload followed by that action must reconstruct the visible state through Example 03, not browser-only state.
-6. The UI must show safe, actionable errors for rejected HTTP requests, malformed SSE payloads, and unreachable API service. It must not expose database credentials or raw stack traces.
-7. While a start or decision stream is active, controls that would start another action for that displayed thread must be disabled.
-
-## Implementation and Quality Requirements
-
-1. Use Next.js with TypeScript and the App Router. Keep browser interaction in a client component and keep HTTP/SSE parsing in a testable TypeScript module.
-2. Use native browser `fetch` streaming; do not introduce an SSE client dependency solely for this example.
-3. Define TypeScript types for Example 03 status data and named SSE event payloads.
-4. Include unit tests for the SSE parser and the API client request/response behaviour without a live FastAPI, Oracle, OCI, or ADB resource.
-5. Provide `package.json` commands for development, production build, linting, type checking, and tests.
-6. Provide an operational Markdown runbook documenting prerequisites, configuration, terminal commands, browser flow, persisted-state reload, and troubleshooting. All documentation must be in English.
-7. Link Example 04 from the root README and record it in `CHANGELOG.md`.
+1. Python code must have the repository header and Google-style docstrings.
+2. Unit tests must cover catalogue matching, quantity handling, no-match
+   proposals, status construction, and idempotent decision handling without
+   OCI or ADB.
+3. The Example 04 README and operational runbook must describe the procurement
+   workflow, configuration, local commands, persistence/reload behaviour, and
+   the simulated-order boundary.
+4. The root README and CHANGELOG must describe Example 04 as an independent IT
+   procurement agent.
 
 ## Acceptance Criteria
 
-* The Next.js project builds successfully with its declared dependencies.
-* Its code does not contain Oracle database credentials or direct Oracle/LangGraph imports.
-* The UI can start Example 03, render its named SSE events, pause for approval, submit a decision, and render completion.
-* Loading a known thread ID renders the status returned by `GET /runs/{thread_id}`.
-* The browser may be served from the documented local origin without a CORS failure.
-* Unit tests cover SSE event parsing, successful status retrieval, and an HTTP error path.
-* The operational runbook permits a developer to run both services and observe durable state after a browser refresh.
+* Example 04 no longer requires the Example 03 service at runtime.
+* A request such as `Order 2 wireless mice` produces a persisted purchase-order
+  proposal for matching catalogue products and pauses for approval.
+* A browser refresh followed by loading a known `example04-` thread reconstructs
+  its state through the Example 04 API.
+* Approval records an `ordered` terminal status; rejection records `rejected`.
+* No real ordering, credentials, supplier integration, or database access is
+  present in the browser code.
 
 ## Out of Scope
 
-* User authentication, tenant isolation, and production authorization policy.
-* Direct ADB access, Oracle SQL views, and checkpoint management from the browser.
-* A real LLM provider or production agent UX.
-* Distributed locking or conflict arbitration for simultaneous decisions.
-* OCI deployment configuration for the Next.js application.
+* Real suppliers, pricing feeds, payment, stock reservation, and fulfilment.
+* Authentication, authorization, budgets, and enterprise purchasing policy.
+* Distributed arbitration for simultaneous conflicting decisions.
+* OCI deployment configuration.

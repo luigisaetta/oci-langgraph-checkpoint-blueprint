@@ -1,6 +1,6 @@
 import type { WorkflowEvent } from "./types";
 
-/** Raised when the Example 03 stream is not valid named JSON SSE data. */
+/** Raised when the Example 04 stream is not valid named JSON SSE data. */
 export class SseParseError extends Error {
   constructor(message: string) {
     super(message);

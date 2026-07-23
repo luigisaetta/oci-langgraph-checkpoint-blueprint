@@ -6,16 +6,17 @@ describe("getRunStatus", () => {
   it("returns a validated persisted run status", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       Response.json({
-        thread_id: "example03-1",
+        thread_id: "example04-1",
         status: "awaiting_approval",
         draft: "Draft",
+        products: [],
         approval_decision: null,
         approval_required: true,
       }),
     );
 
-    await expect(getRunStatus("http://api.example", "example03-1", fetcher)).resolves
-      .toMatchObject({ thread_id: "example03-1", approval_required: true });
+    await expect(getRunStatus("http://api.example", "example04-1", fetcher)).resolves
+      .toMatchObject({ thread_id: "example04-1", approval_required: true });
   });
 
   it("returns a safe API error for an HTTP failure", async () => {
@@ -32,7 +33,7 @@ describe("getRunStatus", () => {
 describe("startRun", () => {
   it("posts the message and forwards named SSE events", async () => {
     const fetcher = vi.fn().mockResolvedValue(
-      new Response('event: run_started\ndata: {"thread_id":"example03-1"}\n\n'),
+      new Response('event: run_started\ndata: {"thread_id":"example04-1"}\n\n'),
     );
     const eventNames: string[] = [];
 

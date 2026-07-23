@@ -1,59 +1,58 @@
-# Example 04: Next.js Durable Workflow UI
+# Example 04: Durable IT Procurement Agent and UI
 
-Example 04 is a browser UI for the durable Human-in-the-Loop workflow exposed by [Example 03](../example03_production_hitl/README.md). It makes the workflow lifecycle visible: start a run, follow its server-sent events, pause for human approval, reload the persisted state, and resume the same thread.
-
-The UI is deliberately a thin client. It communicates only with the Example 03 HTTP/SSE API; it contains no Oracle credentials, `OracleSaver`, LangGraph code, graph state persistence, or direct database access.
+Example 04 is an independent, concrete LangGraph demonstration. A FastAPI
+procurement agent searches a small deterministic IT catalogue, creates a
+simulated purchase-order proposal, pauses for a human decision, and persists
+every state transition in Oracle ADB. Its Next.js UI consumes only this
+example's HTTP/SSE API.
 
 ```text
-Next.js browser UI  -- HTTP/SSE -->  Example 03 FastAPI API  -->  OracleSaver / ADB
+Next.js UI -> Example 04 FastAPI -> LangGraph / OracleSaver -> Oracle ADB
 ```
 
-## What the UI demonstrates
+The demonstration never calls a supplier, reserves stock, charges a payment
+method, or creates a real order.
 
-| Capability | What to observe |
-| --- | --- |
-| Streamed progress | The event timeline receives `run_started`, node updates, an approval request, and completion events from the FastAPI SSE stream. |
-| Human approval | The approval card renders the draft and resumes the persisted thread with `approve` or `reject`. |
-| Durable reload | Paste a previous thread ID after refreshing the browser to reconstruct its current status through `GET /runs/{thread_id}`. |
-| Clear boundaries | The browser knows the FastAPI base URL only. The backend retains responsibility for LangGraph and ADB persistence. |
+## Catalogue and workflow
 
-## Prerequisites
+The embedded catalogue includes a wireless mouse, wireless keyboard, business
+phone, and USB-C battery pack. Requests may be English or use the Italian
+terms `tastiera`, `cellulare`, and `batterie`. A quantity such as `2` is used;
+otherwise the proposal defaults to one unit.
 
-1. Complete the repository [Quick Start](../../QUICKSTART.md) and configure Example 03.
-2. Install a current Node.js LTS release with npm.
-3. Start Example 03 and confirm its readiness endpoint returns `{"status":"ready"}`.
+For example, `Order 2 wireless mice` produces a EUR 58 simulated proposal.
+The durable lifecycle is **Started → Intake → Order proposal → Awaiting
+approval → Order completed**. Approving records `ordered`; rejecting records
+`rejected`.
 
 ## Configuration
 
-Example 03 permits one local browser origin through CORS. The root `.env` uses the following default:
+Complete the repository [Quick Start](../../QUICKSTART.md). In the root `.env`,
+configure the normal ADB wallet variables and the shared pool variables
+`DB_POOL_MIN`, `DB_POOL_MAX`, and `DB_POOL_INCREMENT`. Also set these values:
 
-```dotenv
-NEXTJS_UI_ORIGIN=http://127.0.0.1:3000
-```
+| Variable | Required | Purpose | Safe example |
+| --- | --- | --- | --- |
+| `EXAMPLE04_SERVER_PORT` | No | API port. | `8082` |
+| `NEXTJS_UI_ORIGIN` | No | Exact permitted browser origin. | `http://127.0.0.1:3000` |
+| `NEXT_PUBLIC_EXAMPLE04_API_URL` | No | Browser-visible API base URL in `.env.local`. | `http://127.0.0.1:8082` |
 
-Copy the UI template and keep the API URL aligned with Example 03:
-
-```bash
-cd examples/example04_nextjs_ui
-cp .env.local.example .env.local
-```
-
-```dotenv
-NEXT_PUBLIC_EXAMPLE03_API_URL=http://127.0.0.1:8081
-```
-
-`NEXT_PUBLIC_EXAMPLE03_API_URL` is visible to the browser. It must contain only the public FastAPI URL, never ADB credentials or private configuration.
+Copy `.env.local.example` to `.env.local` in this directory. It contains no
+ADB credentials. The Python service uses the existing validated, wallet-based
+pool configuration pattern from Example 03, but owns its own pool and
+`example04-` checkpoint threads.
 
 ## Run locally
 
-In the first terminal, start the backend from the repository root:
+Start the procurement API from the repository root:
 
 ```bash
 conda activate oci-langgraph-checkpoint-blueprint
-./examples/example03_production_hitl/start_server.sh
+./examples/example04_nextjs_ui/start_server.sh
+curl http://127.0.0.1:8082/health/ready
 ```
 
-In a second terminal, install frontend dependencies and start Next.js:
+Then run the browser UI:
 
 ```bash
 cd examples/example04_nextjs_ui
@@ -61,31 +60,32 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000). For the full start, pause, refresh, reload, and resume scenario, follow the [UI Operational Runbook](UI_OPERATIONAL_RUNBOOK.md).
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000), submit an IT request,
+and approve or reject the proposal. To prove durable recovery, refresh the
+page, paste the displayed `example04-...` thread ID, and select **Load state**.
+The detailed walkthrough is in the [UI Operational Runbook](UI_OPERATIONAL_RUNBOOK.md).
+
+## API and idempotency
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /health/ready` | Validates an acquired ADB pool connection. |
+| `POST /runs` | Starts and streams a procurement workflow. |
+| `GET /runs/{thread_id}` | Reconstructs durable procurement state from ADB. |
+| `POST /runs/{thread_id}/decision` | Approves or rejects the persisted proposal. |
+
+Repeating the same final decision returns an idempotent `run_completed` event
+without executing the graph a second time. Simultaneous conflicting decisions,
+authorization, budgets, and real purchasing policy are outside this example.
 
 ## Quality commands
 
-From `examples/example04_nextjs_ui/`:
-
 ```bash
+black examples/example04_nextjs_ui
+pylint examples/example04_nextjs_ui
+pytest examples/example04_nextjs_ui/tests --cov=examples.example04_nextjs_ui
 npm run lint
 npm run typecheck
 npm test
 npm run build
 ```
-
-The unit tests mock the HTTP response stream. They do not require FastAPI, OCI, Oracle Database, or ADB.
-
-## Security and production boundary
-
-This UI intentionally does not implement authentication or tenant authorization. A production browser application must enforce identity and thread ownership at the API boundary before it allows a user to read or resume a thread. Refer to the repository-wide [OracleSaver best-practices guide](../../ORACLE_SAVER_BEST_PRACTICES.md) for retention, sensitive-state, idempotency, and concurrency guidance.
-
-## Implementation map
-
-| Concern | File |
-| --- | --- |
-| Browser UI and lifecycle rendering | [src/app/page.tsx](src/app/page.tsx) |
-| UI visual system | [src/app/globals.css](src/app/globals.css) |
-| HTTP API client | [src/lib/api.ts](src/lib/api.ts) |
-| Native fetch-stream SSE parser | [src/lib/sse.ts](src/lib/sse.ts) |
-| Operational demonstration | [UI_OPERATIONAL_RUNBOOK.md](UI_OPERATIONAL_RUNBOOK.md) |

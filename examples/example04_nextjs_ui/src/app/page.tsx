@@ -11,14 +11,14 @@ import {
 import type { Decision, RunStatus, WorkflowEvent } from "../lib/types";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_EXAMPLE03_API_URL ?? "http://127.0.0.1:8081";
+  process.env.NEXT_PUBLIC_EXAMPLE04_API_URL ?? "http://127.0.0.1:8082";
 
 const workflowStages = [
   { key: "started", label: "Started" },
   { key: "intake", label: "Intake" },
-  { key: "draft", label: "Draft" },
+  { key: "draft", label: "Order proposal" },
   { key: "awaiting", label: "Awaiting approval" },
-  { key: "completed", label: "Completed" },
+  { key: "completed", label: "Order completed" },
 ] as const;
 
 type StageKey = (typeof workflowStages)[number]["key"];
@@ -43,7 +43,7 @@ function stageFromStatus(status: RunStatus): StageKey {
   if (status.status === "awaiting_approval") {
     return "awaiting";
   }
-  if (status.status === "approved" || status.status === "rejected") {
+  if (status.status === "ordered" || status.status === "rejected") {
     return "completed";
   }
   return "started";
@@ -57,7 +57,7 @@ function eventSummary(event: WorkflowEvent): string {
     return "The workflow is paused and waiting for a human decision.";
   }
   if (event.name === "run_completed") {
-    return "The durable workflow reached a final state.";
+    return "The simulated purchase order reached a final state.";
   }
   if (event.name === "run_started") {
     return "A new durable workflow thread was created.";
@@ -69,7 +69,7 @@ function eventSummary(event: WorkflowEvent): string {
 }
 
 export default function HomePage() {
-  const [message, setMessage] = useState("Prepare the quarterly report");
+  const [message, setMessage] = useState("Order 2 wireless mice");
   const [threadInput, setThreadInput] = useState("");
   const [threadId, setThreadId] = useState<string | null>(null);
   const [runStatus, setRunStatus] = useState<RunStatus | null>(null);
@@ -122,6 +122,7 @@ export default function HomePage() {
             thread_id: finalThreadId,
             status,
             draft: finalDraft,
+            products: [],
             approval_decision:
               approvalDecision === "approve" || approvalDecision === "reject"
                 ? approvalDecision
@@ -180,7 +181,7 @@ export default function HomePage() {
       setEvents([
         {
           name: "persisted_status",
-          summary: "Loaded the current state from the Example 03 workflow API.",
+          summary: "Loaded the current state from the Example 04 procurement API.",
         },
       ]);
     } catch (caughtError) {
@@ -213,12 +214,12 @@ export default function HomePage() {
   return (
     <main>
       <section className="hero">
-        <p className="eyebrow">Example 04 · Next.js workflow client</p>
-        <h1>Durable workflows, made visible.</h1>
+        <p className="eyebrow">Example 04 · IT procurement agent</p>
+        <h1>Durable IT purchasing, made visible.</h1>
         <p className="hero-copy">
-          Start, pause, reload, and resume the Example 03 workflow through a
-          browser UI. The browser speaks only to the FastAPI API; durable state
-          remains in <span>Oracle</span> ADB through the backend.
+          Search the demo IT catalogue, review a simulated purchase order, then
+          pause, reload, and resume it. Durable state remains in <span>Oracle</span>
+          ADB through the backend.
         </p>
       </section>
 
@@ -226,7 +227,7 @@ export default function HomePage() {
         <div className="workflow-heading">
           <div>
             <p className="section-label">Live workflow</p>
-            <h2>Start a new thread</h2>
+            <h2>Start a procurement request</h2>
           </div>
           <span className={isStreaming ? "status streaming" : "status"}>
             {isStreaming ? "Streaming" : "Ready"}
@@ -234,7 +235,7 @@ export default function HomePage() {
         </div>
 
         <form onSubmit={handleStart} className="start-form">
-          <label htmlFor="message">Initial message</label>
+          <label htmlFor="message">IT product request</label>
           <div className="form-row">
             <input
               id="message"
@@ -244,7 +245,7 @@ export default function HomePage() {
               disabled={isStreaming}
             />
             <button type="submit" disabled={isStreaming}>
-              Start workflow
+              Search catalogue
             </button>
           </div>
         </form>
@@ -269,13 +270,13 @@ export default function HomePage() {
           <p className="section-label">Persisted run</p>
           <h2>Load a durable thread</h2>
           <p className="muted">
-            Refreshing this page does not lose the workflow. Paste its thread ID
-            to reconstruct the current state through Example 03.
+            Refreshing this page does not lose the request. Paste its thread ID
+            to reconstruct the current state through Example 04.
           </p>
           <div className="load-row">
             <input
               aria-label="Thread ID"
-              placeholder="example03-..."
+              placeholder="example04-..."
               value={threadInput}
               onChange={(event) => setThreadInput(event.target.value)}
               disabled={isStreaming}
@@ -306,7 +307,7 @@ export default function HomePage() {
 
         <div className="panel activity-panel">
           <p className="section-label">Event timeline</p>
-          <h2>Workflow activity</h2>
+            <h2>Procurement activity</h2>
           {events.length === 0 ? (
             <p className="empty-state">Start or load a workflow to see its state transition events.</p>
           ) : (
@@ -327,7 +328,7 @@ export default function HomePage() {
           <div>
             <p className="section-label">Human-in-the-loop</p>
             <h2>Approval required</h2>
-            <p>{draft ?? "The persisted workflow is waiting for a decision."}</p>
+            <p>{draft ?? "The persisted purchase order is waiting for a decision."}</p>
           </div>
           <div className="decision-controls">
             <button
@@ -343,7 +344,7 @@ export default function HomePage() {
               onClick={() => handleDecision("approve")}
               disabled={isStreaming}
             >
-              Approve and resume
+              Approve simulated order
             </button>
           </div>
         </section>
@@ -353,7 +354,7 @@ export default function HomePage() {
 
       <footer>
         <span>UI boundary</span>
-        Next.js ↔ FastAPI HTTP/SSE ↔ durable workflow backend
+        Next.js ↔ FastAPI HTTP/SSE ↔ durable procurement backend
       </footer>
     </main>
   );

@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Durable Workflow UI | Example 04",
-  description: "Next.js visual client for the durable Example 03 workflow.",
+  description: "Next.js visual client for the durable Example 04 IT procurement workflow.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
