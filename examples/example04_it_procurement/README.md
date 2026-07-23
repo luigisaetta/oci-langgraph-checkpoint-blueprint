@@ -51,7 +51,7 @@ configure the normal ADB wallet variables and the shared pool variables
 | `REGION` | Yes | OCI region used to derive the inference endpoint. | `eu-frankfurt-1` |
 | `OCI_MODEL_ID` | No | OCI hosted Responses API model ID. | `openai.gpt-5.5` |
 
-Copy `.env.local.example` to `.env.local` in this directory. It contains no
+Copy `frontend/.env.local.example` to `frontend/.env.local`. It contains no
 ADB credentials. Set `GENAI_API_KEY` only in the root local `.env`; never
 commit it. The backend factory derives the OCI endpoint as
 `https://inference.generativeai.<REGION>.oci.oraclecloud.com/openai/v1`. The
@@ -65,14 +65,14 @@ Start the procurement API from the repository root:
 
 ```bash
 conda activate oci-langgraph-checkpoint-blueprint
-./examples/example04_nextjs_ui/start_server.sh
+./examples/example04_it_procurement/backend/start_server.sh
 curl http://127.0.0.1:8082/health/ready
 ```
 
 Then run the browser UI:
 
 ```bash
-cd examples/example04_nextjs_ui
+cd examples/example04_it_procurement/frontend
 npm install
 npm run dev
 ```
@@ -98,9 +98,10 @@ authorization, budgets, and real purchasing policy are outside this example.
 ## Quality commands
 
 ```bash
-black examples/example04_nextjs_ui
-pylint examples/example04_nextjs_ui
-pytest examples/example04_nextjs_ui/tests --cov=examples.example04_nextjs_ui
+black examples/example04_it_procurement/backend
+pylint examples/example04_it_procurement/backend
+pytest examples/example04_it_procurement/backend/tests --cov=examples.example04_it_procurement.backend
+cd examples/example04_it_procurement/frontend
 npm run lint
 npm run typecheck
 npm test

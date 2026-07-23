@@ -25,7 +25,9 @@ from examples.example03_production_hitl.pool import (
     load_example03_configuration,
     load_nextjs_ui_origin,
 )
-from examples.example04_nextjs_ui.procurement_graph import build_procurement_graph
+from examples.example04_it_procurement.backend.procurement_graph import (
+    build_procurement_graph,
+)
 
 EXAMPLE_THREAD_ID_PREFIX = "example04-"
 SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
@@ -292,7 +294,10 @@ app = create_app()
 def main() -> None:
     """Run the Example 04 API on its dedicated local port."""
     uvicorn.run(
-        "examples.example04_nextjs_ui.app:app", host="127.0.0.1", port=8082, reload=True
+        "examples.example04_it_procurement.backend.app:app",
+        host="127.0.0.1",
+        port=8082,
+        reload=True,
     )
 
 

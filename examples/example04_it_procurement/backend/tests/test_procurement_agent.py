@@ -14,15 +14,20 @@ from fastapi.testclient import TestClient
 import pytest
 
 from examples.example02_hitl_sse.streaming import format_sse
-from examples.example04_nextjs_ui.app import (
+from examples.example04_it_procurement.backend.app import (
     RunStatus,
     generate_thread_id,
     read_run_status,
     stream_run,
 )
-from examples.example04_nextjs_ui.llm_factory import build_oci_openai_base_url
-from examples.example04_nextjs_ui.procurement_graph import IntakeNode, OfferNode
-from examples.example04_nextjs_ui.procurement_llm import (
+from examples.example04_it_procurement.backend.llm_factory import (
+    build_oci_openai_base_url,
+)
+from examples.example04_it_procurement.backend.procurement_graph import (
+    IntakeNode,
+    OfferNode,
+)
+from examples.example04_it_procurement.backend.procurement_llm import (
     ProcurementInferenceError,
     ProcurementLlmService,
 )
@@ -118,7 +123,9 @@ def test_status_reader_and_streamer_use_the_example04_graph(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """State reconstruction and streaming use the local procurement graph."""
-    application_module = importlib.import_module("examples.example04_nextjs_ui.app")
+    application_module = importlib.import_module(
+        "examples.example04_it_procurement.backend.app"
+    )
 
     class FakeSnapshot:  # pylint: disable=too-few-public-methods
         """Provides a deterministic persisted state."""
@@ -191,7 +198,7 @@ def test_api_resumes_once_and_acknowledges_repeated_decision() -> None:
         yield format_sse("run_completed", {"thread_id": thread_id, "state": {}})
 
     application = importlib.import_module(
-        "examples.example04_nextjs_ui.app"
+        "examples.example04_it_procurement.backend.app"
     ).create_app(
         streamer=streamer,
         status_reader=lambda _pool, thread_id: statuses.get(thread_id),
@@ -217,7 +224,7 @@ def test_api_resumes_once_and_acknowledges_repeated_decision() -> None:
 def test_api_reports_missing_run_and_start_uses_example04_prefix() -> None:
     """The API handles an unknown run and keeps its durable threads isolated."""
     application = importlib.import_module(
-        "examples.example04_nextjs_ui.app"
+        "examples.example04_it_procurement.backend.app"
     ).create_app(
         streamer=lambda *_args: iter(()),
         status_reader=lambda _pool, _thread_id: None,

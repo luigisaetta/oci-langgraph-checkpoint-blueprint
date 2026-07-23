@@ -71,7 +71,7 @@ The examples progress from the smallest checkpointed workflow to a durable, inte
 | [Example 01: Basic LangGraph Flow with Oracle ADB Checkpoints](examples/example01/README.md) | A minimal one-node graph that creates durable checkpoints in Oracle ADB and shows how to inspect the persisted thread history. |
 | [Example 02: Human-in-the-Loop Agent with FastAPI SSE](examples/example02_hitl_sse/README.md) | A three-node FastAPI agent that streams SSE progress, pauses for an approval or rejection, and resumes the same Oracle ADB checkpoint thread. |
 | [Example 03: Production-Oriented HITL Recovery with ADB Pooling](examples/example03_production_hitl/README.md) | A pooled FastAPI service and three-command client that prove a paused approval thread can be inspected and resumed after a server restart. |
-| [Example 04: Durable IT Procurement Agent and UI](examples/example04_nextjs_ui/README.md) | An independent pooled FastAPI and Next.js example that uses OCI Responses API calls to extract an IT request, generate a simulated offer, and pause for human approval. |
+| [Example 04: Durable IT Procurement Agent and UI](examples/example04_it_procurement/README.md) | An independent pooled FastAPI and Next.js example that uses OCI Responses API calls to extract an IT request, generate a simulated offer, and pause for human approval. |
 
 Each example includes its own prerequisites, runnable commands, configuration requirements, ADB inspection queries, and OCI guidance where applicable.
 

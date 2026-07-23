@@ -9,7 +9,7 @@ browser refresh. The workflow is simulated; it never places an external order.
 
 ```bash
 conda activate oci-langgraph-checkpoint-blueprint
-./examples/example04_nextjs_ui/start_server.sh
+./examples/example04_it_procurement/backend/start_server.sh
 curl http://127.0.0.1:8082/health/ready
 ```
 
@@ -23,7 +23,7 @@ own ADB pool and initialized checkpoint storage if needed.
 **What you do**
 
 ```bash
-cd examples/example04_nextjs_ui
+cd examples/example04_it_procurement/frontend
 cp .env.local.example .env.local
 npm install
 npm run dev
@@ -64,7 +64,7 @@ ADB checkpoints. They do not come from browser memory.
 
 **What you do**
 
-Select **Approve simulated order** or **Reject**.
+Select **Approve** or **Reject**.
 
 **What you observe**
 

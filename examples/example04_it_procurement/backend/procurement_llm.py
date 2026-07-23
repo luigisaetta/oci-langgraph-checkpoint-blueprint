@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 from pydantic import BaseModel, Field, ValidationError
 
-from examples.example04_nextjs_ui.llm_factory import (
+from examples.example04_it_procurement.backend.llm_factory import (
     create_oci_responses_client,
     get_oci_model_id,
 )

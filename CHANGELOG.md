@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+* Example 04 has been renamed to `example04_it_procurement` and separated into dedicated `backend/` FastAPI/LangGraph and `frontend/` Next.js directories.
 * Example 02 now uses `SERVER_PORT=8080` as its default FastAPI port, with a documented shell script for starting Uvicorn.
 * The main README now highlights streamed human approval and resume behaviour, and presents the example catalogue as a linked table with concise descriptions.
 * The ADB connection utility now displays a safe connection summary before reporting the result; database and wallet passwords are never shown.

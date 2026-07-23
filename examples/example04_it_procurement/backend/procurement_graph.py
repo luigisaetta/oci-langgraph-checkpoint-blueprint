@@ -10,7 +10,7 @@ from typing import Any, TypedDict
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
-from examples.example04_nextjs_ui.procurement_llm import (
+from examples.example04_it_procurement.backend.procurement_llm import (
     ProcurementLlmService,
     ProcurementRequest,
 )

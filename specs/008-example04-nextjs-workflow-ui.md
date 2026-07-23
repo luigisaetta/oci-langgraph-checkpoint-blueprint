@@ -13,8 +13,10 @@ simulated purchase order for human approval.
 
 ## Scope
 
-Example 04 must contain its own FastAPI/LangGraph agent, based on the durable
-pooling and recovery pattern of Example 03, plus its existing Next.js UI. The
+Example 04 must live in `examples/example04_it_procurement/`, with a `backend/`
+directory for its FastAPI/LangGraph agent and a `frontend/` directory for its
+Next.js UI. The agent is based on the durable pooling and recovery pattern of
+Example 03. The
 agent must use OCI Generative AI's OpenAI-compatible Responses API to extract a
 structured IT procurement request and generate a simulated offer, pause for
 approval, and persist the workflow in Oracle ADB.
@@ -59,6 +61,9 @@ payment flow, inventory reservation, or real purchase is in scope.
    the simulated-order boundary.
 4. The root README and CHANGELOG must describe Example 04 as an independent IT
    procurement agent.
+5. The Example 04 parent README and operational runbook remain at the parent
+   directory. Backend Python tests live in `backend/tests/`; frontend package
+   files, source code, and TypeScript tests live in `frontend/`.
 
 ## Acceptance Criteria
 

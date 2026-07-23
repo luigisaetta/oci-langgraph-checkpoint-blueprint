@@ -3,7 +3,7 @@
 
 set -eu
 
-repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
 environment_file="$repository_root/.env"
 default_port=8082
 
@@ -23,4 +23,4 @@ if [ "$server_port" -lt 1 ] || [ "$server_port" -gt 65535 ]; then
 fi
 
 cd "$repository_root"
-exec python -m uvicorn examples.example04_nextjs_ui.app:app --host 127.0.0.1 --port "$server_port" --reload
+exec python -m uvicorn examples.example04_it_procurement.backend.app:app --host 127.0.0.1 --port "$server_port" --reload
